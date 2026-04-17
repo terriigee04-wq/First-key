@@ -5,1399 +5,419 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FirstKey — Your Path to Homeownership</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script async defer data-domain="yourfirstkey.netlify.app" src="https://plausible.io/js/script.js"></script>
+<script defer data-domain="yourfirstkey.netlify.app" src="https://plausible.io/js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <style>
-/* ============================================================
- FIRSTKEY — Complete Stylesheet
- Version: 1.0 (demo / pre-Stripe)
- ============================================================ */
-
-:root{
- --cream:#faf7f2;--warm:#fff9f2;--forest:#1a3a2a;--sage:#4a7c5f;
- --gold:#c9933a;--gold-light:#f0c46a;--blush:#f2e8dc;
- --text:#1e2a1e;--text2:#4a5a4a;--text3:#7a8a7a;
- --danger:#c0392b;--warning:#e67e22;--success:#27ae60;
- --card:#fff;--shadow:0 4px 24px rgba(26,58,42,.10);
- --radius:16px;--radius-sm:10px;
+:root {
+  --cream: #faf7f2;
+  --forest: #1a3a2a;
+  --sage: #4a7c5f;
+  --gold: #c9933a;
+  --text: #1e2a1e;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-/* ── HEADER ── */
-header{background:var(--forest);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-icon{width:36px;height:36px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.logo-text{font-family:'Playfair Display',serif;font-size:22px;color:#fff}
-.logo-text span{color:var(--gold-light)}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
 
-/* ── HERO ── */
-.hero{background:linear-gradient(135deg,var(--forest) 0%,#2d5a3d 100%);padding:44px 24px 52px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(201,147,58,.2) 0%,transparent 70%);border-radius:50%}
-.hero h1{font-family:'Playfair Display',serif;font-size:clamp(26px,5vw,40px);color:#fff;line-height:1.2;margin-bottom:12px;position:relative;z-index:1}
-.hero h1 em{font-style:normal;color:var(--gold-light)}
-.hero p{color:rgba(255,255,255,.75);font-size:15px;font-weight:300;max-width:440px;margin:0 auto 20px;line-height:1.7;position:relative;z-index:1}
-.trust-strip{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
-.trust-item{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.88);font-size:11px;font-weight:500;padding:6px 13px;border-radius:20px}
+header {
+  background: var(--forest);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-/* ── LAYOUT ── */
-main{max-width:680px;margin:0 auto;padding:24px 16px 60px}
-.free-banner{background:linear-gradient(135deg,#eaf7ee,#f0f9f3);border:1.5px solid #c8ecd4;border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;display:flex;gap:14px;align-items:flex-start}
-.free-banner .ic{font-size:22px;flex-shrink:0;margin-top:2px}
-.free-banner-title{font-weight:700;font-size:14px;color:#1a7a3a;margin-bottom:4px}
-.free-banner-text{font-size:12px;color:#2d6a3f;line-height:1.6}
+.logo-text { font-family: 'Playfair Display', serif; font-size: 22px; color: #fff; }
 
-/* ── STEP NAVIGATION ── */
-.steps-nav{display:flex;margin-bottom:22px;background:var(--card);border-radius:var(--radius);padding:5px;box-shadow:var(--shadow)}
-.step-dot{flex:1;text-align:center;padding:9px 4px;border-radius:10px;font-size:11px;font-weight:600;color:var(--text3);transition:all .2s}
-.step-dot.active{background:var(--forest);color:#fff}
-.step-dot.done{color:var(--sage)}
-.step-dot .sn{display:block;font-size:14px;margin-bottom:1px}
+main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
 
-/* ── CARDS ── */
-.card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:14px;animation:slideUp .4s ease}
-@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.card-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--forest);margin-bottom:5px}
-.card-sub{font-size:13px;color:var(--text3);margin-bottom:18px;line-height:1.5}
+.hero {
+  text-align: center;
+  margin-bottom: 40px;
+  background: linear-gradient(135deg, var(--forest), #2d5a3d);
+  color: white;
+  padding: 40px;
+  border-radius: 12px;
+}
 
-/* ── FORM ELEMENTS ── */
-.field{margin-bottom:16px}
-.label-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.label-row label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin:0}
-.label-unit{font-size:11px;color:var(--text3)}
-.clean-input{width:100%;padding:12px 14px;border:1.5px solid #e8e0d8;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--warm);outline:none;transition:border-color .2s,box-shadow .2s}
-.clean-input:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(74,124,95,.12)}
-.clean-input.error{border-color:var(--danger)}
-select{width:100%;padding:12px 36px 12px 14px;border:1.5px solid #e8e0d8;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--warm);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .2s}
-select:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(74,124,95,.12)}
-.field-hint{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5}
-.field-note{font-size:11px;background:#f0f9f5;color:#2d6a3f;border-radius:6px;padding:7px 10px;margin-top:5px;line-height:1.5}
-.field-warn{display:none;background:#fef3e2;border:1px solid #f0c46a;border-radius:8px;padding:9px 12px;font-size:12px;color:#92400e;margin-top:6px;line-height:1.5}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:440px){.two-col{grid-template-columns:1fr}}
+.hero h1 { font-family: 'Playfair Display', serif; font-size: 36px; margin-bottom: 16px; }
+.hero p { font-size: 16px; line-height: 1.6; max-width: 600px; margin: 0 auto; }
 
-/* ── INCOME FREQUENCY TOGGLE ── */
-.freq-toggle{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.freq-btn{padding:7px 13px;border-radius:20px;border:1.5px solid #e8e0d8;background:var(--warm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .2s}
-.freq-btn.active{background:var(--forest);color:#fff;border-color:var(--forest)}
-.freq-btn:hover:not(.active){background:var(--blush);border-color:var(--sage)}
-.hours-row{display:none;gap:10px;margin-top:8px;align-items:center}
-.hours-row.show{display:flex}
-.hours-row label{font-size:12px;color:var(--text2);font-weight:600;white-space:nowrap}
-.hours-input{width:80px;padding:9px 11px;border:1.5px solid #e8e0d8;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--warm);outline:none}
-.hours-input:focus{border-color:var(--sage)}
-.income-preview{font-size:12px;color:var(--sage);font-weight:600;margin-top:5px;min-height:18px}
+.calculator {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(26, 58, 42, 0.1);
+  margin-bottom: 40px;
+}
 
-/* ── EMPLOYMENT NOTE ── */
-.emp-note{display:none;background:#f0f4ff;border:1px solid #c5d3f5;border-radius:8px;padding:9px 12px;font-size:12px;color:#2a3a7a;margin-top:6px;line-height:1.5}
-.emp-note.show{display:block}
+.form-group {
+  margin-bottom: 24px;
+}
 
-/* ── CREDIT SLIDER ── */
-.credit-display{text-align:center;margin-bottom:10px}
-.credit-num{font-family:'Playfair Display',serif;font-size:40px;color:var(--forest);line-height:1}
-.credit-lbl{font-size:12px;font-weight:600;margin-top:3px;padding:3px 12px;border-radius:20px;display:inline-block}
-.credit-lbl.poor{background:#fdecea;color:var(--danger)}.credit-lbl.fair{background:#fef3e2;color:var(--warning)}
-.credit-lbl.good{background:#eaf7ee;color:var(--success)}.credit-lbl.great{background:#d4f0de;color:#1a7a3a}
-input[type="range"]{width:100%;-webkit-appearance:none;height:6px;background:linear-gradient(to right,var(--danger) 0%,var(--warning) 40%,var(--success) 70%,#1a7a3a 100%);border-radius:3px;outline:none;margin:8px 0}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--forest);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
-.range-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:2px}
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+}
 
-/* ── HOME PRICE TOGGLE ── */
-.price-mode-toggle{display:flex;gap:0;margin-bottom:14px;border:1.5px solid #e8e0d8;border-radius:var(--radius-sm);overflow:hidden}
-.price-mode-btn{flex:1;padding:11px 12px;background:var(--warm);border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .2s;text-align:center}
-.price-mode-btn.active{background:var(--forest);color:#fff}
-.price-mode-btn:first-child{border-right:1px solid #e8e0d8}
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+}
 
-/* ── CITY SEARCH ── */
-.city-search-wrap{position:relative}
-.city-results{position:absolute;top:100%;left:0;right:0;background:var(--card);border:1.5px solid #e8e0d8;border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);box-shadow:var(--shadow);z-index:20;max-height:220px;overflow-y:auto;display:none}
-.city-results.show{display:block}
-.city-result-item{padding:11px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid #f5f0ea}
-.city-result-item:last-child{border-bottom:none}
-.city-result-item:hover{background:var(--blush)}
-.city-result-name{font-size:14px;font-weight:600;color:var(--text)}
-.city-result-prices{font-size:12px;color:var(--text3);margin-top:2px}
-.city-result-prices span{color:var(--sage);font-weight:600}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(74, 124, 95, 0.1);
+}
 
-/* ── BUDGET TIERS ── */
-.budget-tiers{display:none}
-.budget-tiers.show{display:block}
-.tier-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
-.tier-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
-@media(max-width:460px){.tier-cards{grid-template-columns:1fr}}
-.tier-card{border:2px solid #e8e0d8;border-radius:var(--radius-sm);padding:14px 12px;cursor:pointer;transition:all .2s;text-align:center;background:var(--warm)}
-.tier-card:hover{border-color:var(--sage);background:var(--blush)}
-.tier-card.selected{border-color:var(--forest);background:var(--blush)}
-.tier-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:6px}
-.tier-price{font-family:'Playfair Display',serif;font-size:20px;color:var(--forest);margin-bottom:3px}
-.tier-mo{font-size:11px;color:var(--text2)}
-.tier-dti{font-size:10px;color:var(--text3);margin-top:4px}
-.tier-card.selected .tier-name{color:var(--forest)}
-.selected-city-info{background:#f0f4ff;border:1px solid #c5d3f5;border-radius:8px;padding:10px 12px;font-size:12px;color:#2a3a7a;margin-top:8px;display:none}
-.selected-city-info.show{display:block}
+button {
+  background: var(--sage);
+  color: white;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s;
+}
 
-/* ── BUTTONS ── */
-.btn-primary{width:100%;padding:15px;background:var(--forest);color:#fff;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:background .2s,transform .1s;margin-top:8px}
-.btn-primary:hover{background:#2d5a3d}.btn-primary:active{transform:scale(.99)}
-.btn-secondary{width:100%;padding:13px;background:transparent;color:var(--forest);border:1.5px solid var(--forest);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px}
-.btn-secondary:hover{background:var(--blush)}
+button:hover { background: #3a6a4f; }
 
-/* ── REVIEW SCREEN ── */
-.review-card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:14px;animation:slideUp .4s ease}
-.review-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--forest);margin-bottom:5px}
-.review-sub{font-size:13px;color:var(--text3);margin-bottom:14px;line-height:1.5}
-.review-row{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid #f0ebe4}
-.review-row:last-child{border-bottom:none}
-.review-field{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;min-width:130px}
-.review-value{font-size:14px;font-weight:600;color:var(--text);flex:1;padding:0 10px}
-.review-edit{font-size:12px;color:var(--sage);font-weight:600;cursor:pointer;text-decoration:underline;white-space:nowrap}
-.confirm-box{background:linear-gradient(135deg,#eaf7ee,#f0f9f3);border:1.5px solid #c8ecd4;border-radius:var(--radius-sm);padding:14px 16px;margin:14px 0;font-size:13px;color:#1a7a3a;line-height:1.6}
-.confirm-box strong{display:block;margin-bottom:3px}
+.results {
+  display: none;
+  background: #f5f9f7;
+  padding: 30px;
+  border-radius: 12px;
+  margin-top: 30px;
+  border-left: 4px solid var(--sage);
+}
 
-/* ── RESULTS ── */
-.result-hero{background:linear-gradient(135deg,var(--forest),#2d5a3d);border-radius:var(--radius);padding:26px 22px;color:#fff;text-align:center;margin-bottom:14px}
-.result-verdict{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:7px;line-height:1.3}
-.result-verdict.ready{color:var(--gold-light)}.result-verdict.almost{color:#ffd580}.result-verdict.building{color:#ffb366}
-.result-sub{font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;max-width:420px;margin:0 auto}
+.results.show { display: block; }
 
-/* ── METRICS GRID ── */
-.metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
-@media(max-width:380px){.metrics-grid{grid-template-columns:1fr}}
-.mt{background:var(--card);border-radius:var(--radius-sm);padding:14px;box-shadow:var(--shadow)}
-.mt-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:5px}
-.mt-value{font-family:'Playfair Display',serif;font-size:22px;color:var(--forest);line-height:1}
-.mt-note{font-size:11px;color:var(--text3);margin-top:3px}
-.mt.hl{background:var(--forest)}.mt.hl .mt-label{color:rgba(255,255,255,.6)}.mt.hl .mt-value{color:var(--gold-light)}.mt.hl .mt-note{color:rgba(255,255,255,.5)}
+.result-item {
+  margin-bottom: 20px;
+}
 
-/* ── DTI CARD ── */
-.dti-card{background:var(--card);border-radius:var(--radius-sm);padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
-.dti-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:10px}
-.dti-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.dti-label{font-size:11px;color:var(--text2);width:155px;flex-shrink:0}
-.dti-bar-wrap{flex:1;background:#f0ebe4;border-radius:4px;height:9px;overflow:hidden}
-.dti-bar{height:100%;border-radius:4px;transition:width .8s ease}
-.dti-bar.green{background:var(--success)}.dti-bar.amber{background:var(--warning)}.dti-bar.red{background:var(--danger)}
-.dti-pct{font-size:12px;font-weight:700;width:40px;text-align:right;flex-shrink:0}
-.dti-pct.green{color:var(--success)}.dti-pct.amber{color:var(--warning)}.dti-pct.red{color:var(--danger)}
-.dti-sublabel{font-size:11px;color:var(--text3);margin-bottom:10px}
-.dti-breakdown{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6;background:#f8f5f0;padding:9px 12px;border-radius:8px}
+.result-label {
+  font-weight: 600;
+  color: #666;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
-/* ── PROGRAM & ACTION CARDS ── */
-.program-card{background:var(--card);border-radius:var(--radius-sm);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:9px;display:flex;align-items:flex-start;gap:12px;border-left:4px solid var(--sage)}
-.program-card.gb{border-left-color:var(--success)}
-.pi{width:38px;height:38px;border-radius:9px;background:var(--blush);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.pn{font-weight:700;font-size:14px;color:var(--forest);margin-bottom:2px}
-.pd{font-size:12px;color:var(--text2);line-height:1.5}
-.pp{display:inline-block;background:#eaf7ee;color:var(--success);font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:5px}
-.pp.gold{background:#fef3e2;color:var(--gold)}
-.action-step{background:var(--card);border-radius:var(--radius-sm);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:9px;display:flex;gap:12px}
-.snb{width:30px;height:30px;background:var(--forest);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:1px}
-.st{font-weight:700;font-size:14px;color:var(--forest);margin-bottom:3px}
-.sd{font-size:12px;color:var(--text2);line-height:1.5}
-.stm{font-size:11px;font-weight:700;color:var(--sage);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.result-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--forest);
+  margin-top: 4px;
+}
 
-/* ── TIMELINE ── */
-.tl-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
-.tl-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--forest);margin-bottom:14px}
-.tl-bar{position:relative;padding-left:18px}
-.tl-bar::before{content:'';position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,var(--gold),var(--sage))}
-.tl-item{position:relative;margin-bottom:16px;padding-left:14px}
-.tl-item::before{content:'';position:absolute;left:-13px;top:5px;width:9px;height:9px;background:var(--gold);border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 2px var(--gold)}
-.tl-item:last-child::before{background:var(--sage);box-shadow:0 0 0 2px var(--sage)}
-.tl-period{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
-.tl-item:last-child .tl-period{color:var(--sage)}
-.tl-desc{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5}
+.upgrade-section {
+  background: linear-gradient(135deg, #fff9f2, #faf7f2);
+  padding: 30px;
+  border-radius: 12px;
+  border: 2px solid var(--gold);
+  margin-top: 30px;
+  text-align: center;
+}
 
-/* ── MISC ── */
-.shdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin:18px 0 9px}
-.enc-bar{background:linear-gradient(135deg,#eaf7ee,#f0f9f3);border:1px solid #c8ecd4;border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;color:#1a7a3a;line-height:1.6;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
-.loading{text-align:center;padding:40px 20px}
-.loading-spinner{width:46px;height:46px;border:3px solid var(--blush);border-top-color:var(--forest);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:15px;color:var(--text2)}.loading-sub{font-size:13px;color:var(--text3);margin-top:5px}
-.hidden{display:none!important}
-.disclaimer{background:#f8f5f0;border-radius:var(--radius-sm);padding:12px 14px;font-size:11px;color:var(--text3);margin-top:14px;line-height:1.6}
+.upgrade-section h3 {
+  color: var(--forest);
+  margin-bottom: 12px;
+  font-size: 20px;
+}
 
-/* ── PAYWALL ── */
-.paywall{background:linear-gradient(135deg,#0f1117,#1a1d27);border-radius:var(--radius);padding:26px 22px;margin-bottom:14px;position:relative;overflow:hidden}
-.paywall::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:radial-gradient(circle,rgba(201,147,58,.15) 0%,transparent 70%);border-radius:50%}
-.pw-inner{position:relative;z-index:1}
-.pw-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,147,58,.2);border:1px solid rgba(201,147,58,.4);color:var(--gold-light);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px;letter-spacing:.5px}
-.pw-title{font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:6px;line-height:1.2}
-.pw-honest{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:14px;line-height:1.7;font-style:italic}
-.pw-item{display:flex;align-items:flex-start;gap:9px;margin-bottom:8px}
-.pw-chk{width:19px;height:19px;background:rgba(39,174,96,.2);border:1px solid rgba(39,174,96,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;color:#4ade80}
-.pw-it{font-size:13px;color:rgba(255,255,255,.8);line-height:1.5}
-.pw-it strong{color:#fff}
-.pw-includes-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.4);margin:4px 0 8px}
-.price-row{display:flex;align-items:center;gap:14px;margin:14px 0 12px}
-.price-tag{font-family:'Playfair Display',serif;font-size:36px;color:var(--gold-light);line-height:1}
-.price-tag sup{font-size:17px;vertical-align:top;margin-top:5px;display:inline-block}
-.price-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.7}
-.btn-pay{width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),#e8a832);color:#1a1a00;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:9px}
-.btn-pay:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,147,58,.4)}
-.stripe-note{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-size:11px;color:rgba(255,255,255,.35)}
-.pw-no-tricks{font-size:11px;color:rgba(255,255,255,.35);text-align:center;margin-top:8px;line-height:1.5}
-.demo-note{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:rgba(255,255,255,.45);margin-top:12px;text-align:center;line-height:1.5}
-.btn-demo{width:100%;padding:12px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.13);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px}
-.btn-demo:hover{background:rgba(255,255,255,.12)}
+.upgrade-section p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
 
-/* ── REPORT CARD ── */
-.report-card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:14px;border-top:4px solid var(--gold)}
-.report-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.report-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--gold),#e8a832);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
-.report-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--forest)}
-.report-subtitle{font-size:12px;color:var(--text3);margin-top:2px}
-.report-text{font-size:14px;color:var(--text2);line-height:1.85;white-space:pre-wrap;margin-bottom:14px}
-.report-loading{text-align:center;padding:28px}
-.report-spinner{width:34px;height:34px;border:3px solid var(--blush);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
-.report-loading-text{font-size:14px;color:var(--text2)}
-.report-actions{display:flex;gap:10px;flex-wrap:wrap;padding-top:14px;border-top:1px solid #f0ebe4}
-.btn-action{flex:1;min-width:130px;padding:11px 14px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;border:none}
-.btn-pdf{background:var(--forest);color:#fff}.btn-pdf:hover{background:#2d5a3d}
-.btn-print{background:var(--sage);color:#fff}.btn-print:hover{background:#3a6a4f}
-.btn-rerun{background:var(--blush);color:var(--forest);border:1.5px solid #e8d8c8}.btn-rerun:hover{background:#ead5c0}
-.rerun-notice{background:#fef3e2;border:1px solid #f0c46a;border-radius:var(--radius-sm);padding:12px 14px;font-size:12px;color:#92400e;margin-top:10px;line-height:1.6}
-.rerun-notice strong{display:block;margin-bottom:3px}
+.upgrade-btn {
+  background: var(--gold);
+  padding: 16px 32px;
+  font-size: 18px;
+}
 
-.restart-btn{text-align:center;margin-top:18px}
-.restart-btn button{background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif}
+.upgrade-btn:hover { background: #b8814d; }
 
-/* ── PRINT STYLES ── */
-@media print{
- header,.steps-nav,.paywall,.report-actions,.restart-btn,.hero,
- .btn-primary,.btn-secondary,.freq-toggle,.hours-row,
- .price-mode-toggle,.city-results,.tier-cards,.free-banner{display:none!important}
- body{background:#fff}
- .result-hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.free-badge {
+  display: inline-block;
+  background: var(--sage);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+#stripe-container {
+  display: none;
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+#stripe-container.show { display: block; }
+
+.error {
+  background: #fde8e8;
+  color: #c0392b;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.error.show { display: block; }
+
+footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 14px;
 }
 </style>
 </head>
 <body>
 
-<!-- ============================================================
- HEADER
- ============================================================ -->
 <header>
- <div class="logo">
- <div class="logo-icon">🔑</div>
- <div class="logo-text">First<span>Key</span></div>
- </div>
- <div style="font-size:11px;color:rgba(255,255,255,.5)">Free homebuyer guidance</div>
+  <div class="logo-text">FirstKey</div>
 </header>
 
-<!-- ============================================================
- HERO
- ============================================================ -->
-<div class="hero">
- <h1>Your home is <em>closer</em><br>than you think</h1>
- <p>Honest guidance for first-time buyers — wherever you are in the process. We'll show you exactly where you stand and what to do next, in plain English.</p>
- <div class="trust-strip">
- <span class="trust-item">🏠 Free plan always</span>
- <span class="trust-item">📋 Real loan programs</span>
- <span class="trust-item">🤝 No pressure, no hype</span>
- <span class="trust-item">🔒 Your data stays private</span>
- </div>
-</div>
-
-<!-- ============================================================
- MAIN CONTENT
- ============================================================ -->
 <main>
+  <div class="hero">
+    <h1>Your Path to Homeownership</h1>
+    <p>Calculate your budget, DTI ratio, and loan eligibility in seconds. Get AI-powered advice and detailed reports.</p>
+  </div>
 
- <!-- Free value banner -->
- <div class="free-banner">
- <div class="ic">💚</div>
- <div>
- <div class="free-banner-title">Your full plan is completely free</div>
- <div class="free-banner-text">Your loan programs, action steps, DTI ratios, and timeline are all free — no email required, no credit card needed. The only paid option is an optional AI-written personal summary at the end, if you want it.</div>
- </div>
- </div>
+  <div class="calculator">
+    <div class="free-badge">FREE ANALYSIS</div>
+    
+    <form id="calcForm">
+      <div class="form-group">
+        <label for="income">Annual Gross Income ($)</label>
+        <input type="number" id="income" placeholder="e.g., 75000" required>
+      </div>
 
- <!-- Step navigation -->
- <div class="steps-nav">
- <div class="step-dot active" id="dot1"><span class="sn">①</span>You</div>
- <div class="step-dot" id="dot2"><span class="sn">②</span>Home</div>
- <div class="step-dot" id="dot3"><span class="sn">③</span>Review</div>
- <div class="step-dot" id="dot4"><span class="sn">④</span>Your Plan</div>
- </div>
+      <div class="form-group">
+        <label for="downPayment">Down Payment ($)</label>
+        <input type="number" id="downPayment" placeholder="e.g., 40000" required>
+      </div>
 
- <!-- ============================================================
- STEP 1 — Your Information
- ============================================================ -->
- <div id="step1">
- <div class="card">
- <div class="card-title">Tell us about yourself</div>
- <div class="card-sub">Be as accurate as you can — it makes your plan more useful. You can always come back and adjust.</div>
+      <div class="form-group">
+        <label for="savings">Current Savings ($)</label>
+        <input type="number" id="savings" placeholder="e.g., 50000" required>
+      </div>
 
- <!-- Income with frequency toggle -->
- <div class="field">
- <div class="label-row"><label>Your income</label><span class="label-unit">enter however you know it</span></div>
- <div class="freq-toggle">
- <button class="freq-btn" onclick="setFreq('hourly',this)">Hourly</button>
- <button class="freq-btn" onclick="setFreq('weekly',this)">Weekly</button>
- <button class="freq-btn active" onclick="setFreq('monthly',this)">Monthly</button>
- <button class="freq-btn" onclick="setFreq('annual',this)">Annual</button>
- </div>
- <input class="clean-input" type="text" id="income" placeholder="9,500" oninput="fmtInput(this);updatePreview();checkDTI()">
- <div class="hours-row" id="hoursRow">
- <label>Hours per week:</label>
- <input class="hours-input" type="text" id="hoursPerWeek" value="40" oninput="updatePreview()">
- </div>
- <div class="income-preview" id="incomePreview"></div>
- <div class="field-hint" id="incomeHint">Enter your monthly income before taxes</div>
- </div>
+      <div class="form-group">
+        <label for="debts">Monthly Debt Payments ($)</label>
+        <input type="number" id="debts" placeholder="e.g., 500" required>
+      </div>
 
- <!-- Employment type (13 options in 3 groups) -->
- <div class="field">
- <div class="label-row"><label>Employment type</label><span class="label-unit">choose what fits best</span></div>
- <select id="employment" onchange="showEmpNote()">
- <optgroup label="Employed">
- <option value="fulltime">W2 Employee — Full-Time (salaried or hourly)</option>
- <option value="parttime">W2 Employee — Part-Time (under 32 hrs/week)</option>
- <option value="commission">Commission or Variable Income (sales, tips)</option>
- <option value="multiple">Multiple Jobs (W2 from more than one employer)</option>
- </optgroup>
- <optgroup label="Self-Employed / Business">
- <option value="self">Self-Employed or Freelancer (1099 contractor)</option>
- <option value="gig">Gig Worker (Uber, DoorDash, TaskRabbit etc.)</option>
- <option value="business">Business Owner (LLC, S-Corp, partnership)</option>
- </optgroup>
- <optgroup label="Other Income">
- <option value="retired">Retired — Pension or 401k distributions</option>
- <option value="social">Retired — Social Security income</option>
- <option value="disability">Disability benefits (SSI or SSDI)</option>
- <option value="military">Active Military or Veteran</option>
- <option value="seasonal">Seasonal Worker</option>
- <option value="unemployed">Not currently employed</option>
- </optgroup>
- </select>
- <div class="emp-note" id="empNote"></div>
- </div>
+      <div class="form-group">
+        <label for="state">State</label>
+        <select id="state" required>
+          <option>Select a state...</option>
+          <option>Missouri</option>
+          <option>California</option>
+          <option>Texas</option>
+          <option>New York</option>
+          <option>Florida</option>
+          <option>Other</option>
+        </select>
+      </div>
 
- <!-- Credit score slider -->
- <div class="field">
- <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px">Credit score — drag to yours</label>
- <div class="credit-display">
- <div class="credit-num" id="creditNum">620</div>
- <div class="credit-lbl fair" id="creditLbl">Fair Credit</div>
- </div>
- <input type="range" id="creditSlider" min="300" max="850" value="620">
- <div class="range-labels"><span>300 Poor</span><span>580 Fair</span><span>670 Good</span><span>850 Excellent</span></div>
- <div class="field-hint">Not sure? Pull your free report at annualcreditreport.com — it doesn't hurt your score.</div>
- </div>
+      <div class="form-group">
+        <label for="email">Email (for results)</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+      </div>
 
- <!-- Down payment + debts -->
- <div class="two-col">
- <div class="field">
- <div class="label-row"><label>Down payment saved</label><span class="label-unit">total</span></div>
- <input class="clean-input" type="text" id="downpayment" placeholder="10,000" oninput="fmtInput(this)">
- <div class="field-hint">Include any gift money from family</div>
- </div>
- <div class="field">
- <div class="label-row"><label>Monthly debt payments</label><span class="label-unit">per month</span></div>
- <input class="clean-input" type="text" id="debts" placeholder="500" oninput="fmtInput(this);checkDTI()">
- <div class="field-hint">Car, student loans, credit card minimums</div>
- <div class="field-warn" id="dtiWarn">⚠️ Your debts are high relative to income — we'll factor this in and show you options.</div>
- </div>
- </div>
+      <div class="error" id="error"></div>
 
- <button class="btn-primary" onclick="goStep2()">Next — Tell us about the home →</button>
- </div>
- </div>
+      <button type="submit">Calculate My Results</button>
+    </form>
 
- <!-- ============================================================
- STEP 2 — Home Information
- ============================================================ -->
- <div id="step2" class="hidden">
- <div class="card">
- <div class="card-title">What home are you looking for?</div>
- <div class="card-sub">Not sure of the price? Use the city search and we'll help you figure out what you can afford.</div>
+    <div id="results" class="results">
+      <h2>Your Analysis</h2>
+      
+      <div class="result-item">
+        <div class="result-label">Max Home Budget</div>
+        <div class="result-value" id="maxBudget">$0</div>
+      </div>
 
- <!-- Price mode toggle -->
- <div class="price-mode-toggle">
- <button class="price-mode-btn active" id="modeKnow" onclick="setPriceMode('know')">I know my budget or home price</button>
- <button class="price-mode-btn" id="modeDont" onclick="setPriceMode('dont')">I'm not sure what I can afford</button>
- </div>
+      <div class="result-item">
+        <div class="result-label">DTI Ratio</div>
+        <div class="result-value" id="dtiRatio">0%</div>
+      </div>
 
- <!-- Known price section -->
- <div id="knownPriceSection">
- <div class="field">
- <div class="label-row"><label>Target home price or budget</label><span class="label-unit">purchase price</span></div>
- <input class="clean-input" type="text" id="homePrice" placeholder="280,000" oninput="fmtInput(this)">
- </div>
- </div>
+      <div class="result-item">
+        <div class="result-label">Monthly Payment Capacity</div>
+        <div class="result-value" id="monthlyPayment">$0</div>
+      </div>
 
- <!-- Unknown price — city search + budget tiers -->
- <div id="unknownPriceSection" class="hidden">
- <div class="field">
- <div class="label-row"><label>Search your city or area</label><span class="label-unit">type to search</span></div>
- <div class="city-search-wrap">
- <input class="clean-input" type="text" id="citySearch" placeholder="e.g. Austin, TX or Orlando, FL" oninput="searchCities(this.value)" autocomplete="off">
- <div class="city-results" id="cityResults"></div>
- </div>
- <div class="selected-city-info" id="selectedCityInfo"></div>
- </div>
- <div class="budget-tiers" id="budgetTiers">
- <div class="tier-label">Based on your income, choose a comfort level:</div>
- <div class="tier-cards" id="tierCards"></div>
- <div class="field-note" id="tierNote"></div>
- </div>
- </div>
+      <div class="result-item">
+        <div class="result-label">Recommended Loan Program</div>
+        <div class="result-value" id="loanProgram">Conventional</div>
+      </div>
 
- <!-- State, veteran, priority -->
- <div class="two-col" style="margin-top:14px">
- <div class="field">
- <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px">State you're buying in</label>
- <select id="state">
- <option value="">Select state...</option>
- <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option><option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option><option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option><option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option>
- </select>
- </div>
- <div class="field">
- <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px">Veteran or active military?</label>
- <select id="veteran"><option value="no">No</option><option value="yes">Yes — I served or am serving</option></select>
- </div>
- </div>
- <div class="field">
- <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px">What matters most right now?</label>
- <select id="priority">
- <option value="affordable">Lowest monthly payment possible</option>
- <option value="leastdown">Get in with the least money down</option>
- <option value="fast">Buy as fast as possible</option>
- <option value="rural">Open to rural or smaller towns</option>
- </select>
- </div>
- <button class="btn-primary" onclick="goReview()">Review My Information →</button>
- <button class="btn-secondary" onclick="goStep1()">← Back</button>
- </div>
- </div>
+      <div class="upgrade-section">
+        <h3>Get AI Advice & Excel Report</h3>
+        <p>Unlock personalized recommendations and downloadable analysis</p>
+        <button class="upgrade-btn" id="upgradeBtn">Upgrade for $9.99</button>
+      </div>
+    </div>
 
- <!-- ============================================================
- STEP 3 — Review Screen
- ============================================================ -->
- <div id="step3" class="hidden">
- <div class="review-card">
- <div class="review-title">Does everything look right?</div>
- <div class="review-sub">Your plan is based entirely on these numbers. Take a moment — click Edit next to anything that needs fixing.</div>
- <div class="confirm-box">
- <strong>🔍 Why we ask you to review</strong>
- A single wrong number — especially income — can completely change your DTI ratios and which loan programs you qualify for. Two minutes here saves confusion later.
- </div>
- <div id="reviewRows"></div>
- <button class="btn-primary" onclick="analyzeAndShow()" style="margin-top:14px">✓ Everything is correct — Show my plan</button>
- <button class="btn-secondary" onclick="goStep2()">← Go back and edit</button>
- </div>
- </div>
-
- <!-- Loading state -->
- <div id="loadingState" class="hidden">
- <div class="loading">
- <div class="loading-spinner"></div>
- <div class="loading-text" id="loadingText">Analyzing your situation...</div>
- <div class="loading-sub" id="loadingSub">Checking loan program eligibility</div>
- </div>
- </div>
-
- <!-- ============================================================
- STEP 4 — Results
- ============================================================ -->
- <div id="step4" class="hidden">
-
- <!-- Verdict banner -->
- <div class="result-hero">
- <div class="result-verdict" id="verdictText"></div>
- <div class="result-sub" id="verdictSub"></div>
- </div>
-
- <!-- Encouragement bar -->
- <div id="encBar" class="enc-bar hidden">
- <span style="font-size:18px;flex-shrink:0">💚</span>
- <span id="encText"></span>
- </div>
-
- <!-- Key metrics grid -->
- <div class="metrics-grid" id="metricsGrid"></div>
-
- <!-- DTI ratios -->
- <div class="dti-card">
- <div class="dti-title">Your Debt-to-Income Ratios — How Lenders See You</div>
- <div id="dtiRows"></div>
- <div class="dti-breakdown" id="dtiBreakdown"></div>
- </div>
-
- <!-- Loan programs -->
- <div class="shdr" id="programsHdr"></div>
- <div id="loanPrograms"></div>
-
- <!-- Action steps -->
- <div class="shdr" id="stepsHdr"></div>
- <div id="actionSteps"></div>
-
- <!-- Timeline -->
- <div class="tl-card" id="tlCard" style="display:none">
- <div class="tl-title">📅 Your realistic timeline</div>
- <div class="tl-bar" id="tlBar"></div>
- </div>
-
- <!-- Disclaimer -->
- <div class="disclaimer">
- <strong>Important:</strong> These figures are estimates based on the information you provided and national averages. Actual loan terms, rates, and eligibility vary by lender and your complete financial picture. Always verify with a licensed mortgage professional or free HUD-approved counselor. This tool is for education only and is not financial advice.
- </div>
-
- <!-- ============================================================
- PAYWALL — $7 AI Report
- NOTE: Stripe integration is NOT yet live.
- See backend/server code section for what is needed.
- ============================================================ -->
- <div class="paywall" id="paywallSection" style="margin-top:14px">
- <div class="pw-inner">
- <div class="pw-badge">✦ OPTIONAL AI REPORT — $7</div>
- <div class="pw-title">Want a personal written assessment?</div>
- <div class="pw-honest">"Your free plan above covers everything you need to take action. The AI report is just a different way to hear it — written specifically about you, in plain English, like a knowledgeable friend explaining your situation."</div>
- <div class="pw-includes-title">The paid report adds</div>
- <div class="pw-item"><div class="pw-chk">✓</div><div class="pw-it"><strong>Personal AI summary</strong> — 4 paragraphs written specifically about your numbers</div></div>
- <div class="pw-item"><div class="pw-chk">✓</div><div class="pw-it"><strong>PDF download</strong> — save or print your full report to share with a lender</div></div>
- <div class="pw-item"><div class="pw-chk">✓</div><div class="pw-it"><strong>One free update</strong> — if you entered something wrong, one free re-run included</div></div>
- <div class="price-row">
- <div class="price-tag"><sup>$</sup>7</div>
- <div class="price-desc">One-time · Instant<br>No subscription<br>No auto-renewal ever</div>
- </div>
- <!-- TO GO LIVE: Replace onclick with Stripe checkout -->
- <button class="btn-pay" onclick="handlePayment()"><span>🔑</span> Get My Personal Report — $7</button>
- <div class="stripe-note">🔒 Stripe · Visa, Mastercard, Apple Pay, Google Pay</div>
- <div class="pw-no-tricks">No tricks. No recurring charges. No email list. Just a report.</div>
- <div class="demo-note"><strong>Demo mode:</strong> Stripe not yet connected — preview the AI report free below.</div>
- <button class="btn-demo" onclick="runDemoReport()">Preview AI Report (free demo) →</button>
- </div>
- </div>
-
- <!-- AI Report card (shown after payment or demo) -->
- <div class="report-card hidden" id="reportCard">
- <div class="report-header">
- <div class="report-icon">🔑</div>
- <div>
- <div class="report-title">Your Personal FirstKey Report</div>
- <div class="report-subtitle">Written by AI · Based on your exact numbers</div>
- </div>
- </div>
- <div id="reportLoading" class="report-loading hidden">
- <div class="report-spinner"></div>
- <div class="report-loading-text">Writing your personal assessment...</div>
- </div>
- <div class="report-text" id="reportText"></div>
- <div class="report-actions" id="reportActions" style="display:none">
- <button class="btn-action btn-pdf" onclick="downloadPDF()">📄 Download PDF</button>
- <button class="btn-action btn-print" onclick="window.print()">🖨 Print</button>
- <button class="btn-action btn-rerun" onclick="offerRerun()" id="rerunBtn">✏️ Update Numbers</button>
- </div>
- <div class="rerun-notice hidden" id="rerunNotice">
- <strong>✓ One free update included</strong>
- Go back and correct anything — your updated report generates at no extra charge. After your one free update, additional reports require a new payment.
- <br><br>
- <button class="btn-secondary" onclick="doRerun()" style="margin-top:8px;width:auto;padding:10px 20px;font-size:13px">Update my numbers →</button>
- </div>
- </div>
-
- <div class="restart-btn"><button onclick="restart()">↺ Start completely over</button></div>
- </div>
-
+    <div id="stripe-container">
+      <h3>Complete Your Purchase</h3>
+      <div id="card-element"></div>
+      <button id="submit-payment" type="button" style="margin-top: 20px;">Pay $9.99</button>
+    </div>
+  </div>
 </main>
 
-<!-- ============================================================
- JAVASCRIPT
- ============================================================ -->
+<footer>
+  <p>&copy; 2026 FirstKey. All rights reserved.</p>
+</footer>
+
 <script>
-
-// ============================================================
-// CITY DATA — 52 major US metros with median/low/high prices
-// Source: approximated from Zillow/Redfin 2024 data
-// TODO: Replace with live API call (Zillow API or Attom Data)
-// ============================================================
-const CITIES = [
- {name:'Atlanta, GA', state:'Georgia', median:390000, low:280000, high:520000},
- {name:'Austin, TX', state:'Texas', median:485000, low:320000, high:680000},
- {name:'Baltimore, MD', state:'Maryland', median:295000, low:180000, high:440000},
- {name:'Birmingham, AL', state:'Alabama', median:215000, low:140000, high:320000},
- {name:'Charlotte, NC', state:'North Carolina', median:370000, low:260000, high:510000},
- {name:'Chicago, IL', state:'Illinois', median:340000, low:180000, high:550000},
- {name:'Cincinnati, OH', state:'Ohio', median:240000, low:150000, high:360000},
- {name:'Cleveland, OH', state:'Ohio', median:185000, low:110000, high:290000},
- {name:'Columbus, OH', state:'Ohio', median:280000, low:175000, high:400000},
- {name:'Dallas, TX', state:'Texas', median:380000, low:260000, high:530000},
- {name:'Denver, CO', state:'Colorado', median:580000, low:380000, high:800000},
- {name:'Detroit, MI', state:'Michigan', median:210000, low:100000, high:360000},
- {name:'El Paso, TX', state:'Texas', median:230000, low:150000, high:340000},
- {name:'Fort Worth, TX', state:'Texas', median:320000, low:215000, high:460000},
- {name:'Houston, TX', state:'Texas', median:310000, low:200000, high:460000},
- {name:'Indianapolis, IN', state:'Indiana', median:265000, low:170000, high:390000},
- {name:'Jacksonville, FL', state:'Florida', median:315000, low:210000, high:460000},
- {name:'Kansas City, MO', state:'Missouri', median:265000, low:165000, high:400000},
- {name:'Las Vegas, NV', state:'Nevada', median:415000, low:270000, high:600000},
- {name:'Los Angeles, CA', state:'California', median:830000, low:550000, high:1200000},
- {name:'Louisville, KY', state:'Kentucky', median:250000, low:160000, high:370000},
- {name:'Memphis, TN', state:'Tennessee', median:195000, low:120000, high:310000},
- {name:'Miami, FL', state:'Florida', median:580000, low:350000, high:900000},
- {name:'Milwaukee, WI', state:'Wisconsin', median:230000, low:140000, high:360000},
- {name:'Minneapolis, MN', state:'Minnesota', median:340000, low:220000, high:500000},
- {name:'Nashville, TN', state:'Tennessee', median:450000, low:300000, high:660000},
- {name:'New Orleans, LA', state:'Louisiana', median:265000, low:160000, high:420000},
- {name:'New York City, NY', state:'New York', median:750000, low:450000, high:1100000},
- {name:'Oklahoma City, OK', state:'Oklahoma', median:225000, low:145000, high:340000},
- {name:'Omaha, NE', state:'Nebraska', median:265000, low:175000, high:390000},
- {name:'Orlando, FL', state:'Florida', median:385000, low:250000, high:560000},
- {name:'Philadelphia, PA', state:'Pennsylvania', median:280000, low:160000, high:450000},
- {name:'Phoenix, AZ', state:'Arizona', median:415000, low:270000, high:590000},
- {name:'Pittsburgh, PA', state:'Pennsylvania', median:230000, low:140000, high:360000},
- {name:'Portland, OR', state:'Oregon', median:515000, low:340000, high:730000},
- {name:'Raleigh, NC', state:'North Carolina', median:420000, low:280000, high:590000},
- {name:'Richmond, VA', state:'Virginia', median:335000, low:220000, high:490000},
- {name:'Riverside, CA', state:'California', median:520000, low:350000, high:730000},
- {name:'Sacramento, CA', state:'California', median:510000, low:340000, high:720000},
- {name:'Salt Lake City, UT', state:'Utah', median:520000, low:340000, high:740000},
- {name:'San Antonio, TX', state:'Texas', median:295000, low:195000, high:430000},
- {name:'San Diego, CA', state:'California', median:820000, low:540000, high:1150000},
- {name:'San Francisco, CA', state:'California', median:1200000,low:750000, high:1800000},
- {name:'San Jose, CA', state:'California', median:1100000,low:700000, high:1600000},
- {name:'Seattle, WA', state:'Washington', median:750000, low:490000, high:1050000},
- {name:'St. Louis, MO', state:'Missouri', median:230000, low:130000, high:380000},
- {name:'Tampa, FL', state:'Florida', median:365000, low:240000, high:530000},
- {name:'Tucson, AZ', state:'Arizona', median:285000, low:185000, high:420000},
- {name:'Tulsa, OK', state:'Oklahoma', median:210000, low:135000, high:320000},
- {name:'Virginia Beach, VA', state:'Virginia', median:340000, low:225000, high:490000},
- {name:'Washington, DC', state:'District of Columbia', median:580000, low:360000, high:900000},
- {name:'Wichita, KS', state:'Kansas', median:205000, low:130000, high:310000},
-];
-
-// ============================================================
-// EMPLOYMENT NOTES — shown contextually per selection
-// ============================================================
-const EMP_NOTES = {
- fulltime: 'Most lender-friendly option. Two years of W2 history is ideal.',
- parttime: 'Part-time W2 income counts. Lenders look at your hours and consistency.',
- commission: 'Lenders average your last 2 years of commission income from tax returns.',
- multiple: 'All W2 income from multiple jobs counts. Bring pay stubs from each employer.',
- self: 'Lenders need 2 years of tax returns. Net income after deductions is what counts.',
- gig: 'Treated like self-employment. 2 years of platform income history helps significantly.',
- business: 'Lenders look at personal income (salary + distributions) on your tax returns.',
- retired: 'Pension, 401k distributions, and IRA income all count. Bring your most recent statements.',
- social: 'Social Security income counts and is often grossed up 15-25% by lenders — this helps your DTI.',
- disability: 'SSI and SSDI income qualifies for FHA and conventional loans. Bring your benefit award letter.',
- military: 'BAH and BAS count toward income. You likely qualify for a VA loan with $0 down.',
- seasonal: 'Lenders look at a 2-year average. An employer letter confirming the seasonal pattern helps.',
- unemployed: 'Most programs require at least 2 years of employment history. Focus on building credit and savings now.',
-};
-
-// ============================================================
-// APP STATE
-// ============================================================
-let freq = 'monthly';
-let priceMode = 'know';
-let selectedCity = null;
-let selectedTierPrice = null;
-let rerunUsed = false;
-let G = {}; // Global results state for PDF / AI report
-
-// ============================================================
-// INCOME FREQUENCY
-// ============================================================
-function setFreq(f, btn) {
- freq = f;
- document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
- btn.classList.add('active');
- document.getElementById('hoursRow').className = 'hours-row' + (f==='hourly' ? ' show' : '');
- const hints = {
- hourly: 'Enter your hourly wage — we\'ll calculate your monthly amount automatically',
- weekly: 'Enter your typical weekly pay before taxes',
- monthly: 'Enter your monthly income before taxes',
- annual: 'Enter your annual salary or total yearly income'
- };
- const placeholders = { hourly:'18.50', weekly:'2,192', monthly:'9,500', annual:'114,000' };
- document.getElementById('incomeHint').textContent = hints[f];
- document.getElementById('income').placeholder = placeholders[f];
- updatePreview();
-}
-
-function getMonthlyIncome() {
- const raw = parseNum('income');
- const hrs = parseFloat(document.getElementById('hoursPerWeek').value) || 40;
- if (freq === 'hourly') return raw * hrs * 52 / 12;
- if (freq === 'weekly') return raw * 52 / 12;
- if (freq === 'monthly') return raw;
- if (freq === 'annual') return raw / 12;
- return raw;
-}
-
-function updatePreview() {
- const mo = getMonthlyIncome();
- const prev = document.getElementById('incomePreview');
- if (mo > 0 && freq !== 'monthly') {
- prev.textContent = '≈ $' + mo.toLocaleString('en-US',{maximumFractionDigits:0}) + '/month ($' + (mo*12).toLocaleString('en-US',{maximumFractionDigits:0}) + '/year)';
- } else {
- prev.textContent = '';
- }
- if (selectedCity) showBudgetTiers(selectedCity);
-}
-
-// ============================================================
-// EMPLOYMENT NOTES
-// ============================================================
-function showEmpNote() {
- const val = document.getElementById('employment').value;
- const note = document.getElementById('empNote');
- if (EMP_NOTES[val]) {
- note.textContent = '💡 ' + EMP_NOTES[val];
- note.className = 'emp-note show';
- } else {
- note.className = 'emp-note';
- }
-}
-
-// ============================================================
-// PRICE MODE TOGGLE
-// ============================================================
-function setPriceMode(mode) {
- priceMode = mode;
- document.getElementById('modeKnow').className = 'price-mode-btn' + (mode==='know' ? ' active' : '');
- document.getElementById('modeDont').className = 'price-mode-btn' + (mode==='dont' ? ' active' : '');
- document.getElementById('knownPriceSection').classList.toggle('hidden', mode !== 'know');
- document.getElementById('unknownPriceSection').classList.toggle('hidden', mode !== 'dont');
-}
-
-// ============================================================
-// CITY SEARCH
-// ============================================================
-function searchCities(q) {
- const results = document.getElementById('cityResults');
- if (!q || q.length < 2) { results.classList.remove('show'); return; }
- const matches = CITIES.filter(c => c.name.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
- if (!matches.length) { results.classList.remove('show'); return; }
- results.innerHTML = matches.map(c => `
- <div class="city-result-item" onclick="selectCity(${CITIES.indexOf(c)})">
- <div class="city-result-name">${c.name}</div>
- <div class="city-result-prices">Starter homes from <span>$${(c.low/1000).toFixed(0)}k</span> · Median <span>$${(c.median/1000).toFixed(0)}k</span></div>
- </div>`).join('');
- results.classList.add('show');
-}
-
-function selectCity(idx) {
- selectedCity = CITIES[idx];
- document.getElementById('citySearch').value = selectedCity.name;
- document.getElementById('cityResults').classList.remove('show');
- // Auto-fill state dropdown
- const stateSelect = document.getElementById('state');
- for (let i = 0; i < stateSelect.options.length; i++) {
- if (stateSelect.options[i].text === selectedCity.state) { stateSelect.selectedIndex = i; break; }
- }
- const infoEl = document.getElementById('selectedCityInfo');
- infoEl.innerHTML = '<strong>' + selectedCity.name + '</strong> — Starter homes typically from <strong>$' + selectedCity.low.toLocaleString() + '</strong> to <strong>$' + selectedCity.high.toLocaleString() + '</strong>. Median price: $' + selectedCity.median.toLocaleString() + '.';
- infoEl.classList.add('show');
- showBudgetTiers(selectedCity);
-}
-
-// ============================================================
-// BUDGET TIERS — calculated from user's income
-// ============================================================
-function showBudgetTiers(city) {
- const monthly = getMonthlyIncome();
- const debts = parseNum('debts');
- const r = 0.075 / 12, n = 360;
-
- function maxHome(dtiPct) {
- const avail = Math.max(0, monthly * dtiPct / 100 - debts);
- const loan = avail > 0 ? avail * ((1 - Math.pow(1+r, -n)) / r) : 0;
- return loan / 0.965; // FHA 3.5% down
- }
-
- const tiers = [
- { name:'Comfortable', dti:30, desc:'DTI ~30% — most lenders love this' },
- { name:'Moderate', dti:38, desc:'DTI ~38% — solid and approvable' },
- { name:'Maximum', dti:43, desc:'DTI 43% — FHA upper limit' },
- ];
-
- const tiersEl = document.getElementById('budgetTiers');
- const cardsEl = document.getElementById('tierCards');
- tiersEl.classList.add('show');
-
- cardsEl.innerHTML = tiers.map((t, i) => {
- const price = maxHome(t.dti);
- const mo = monthly * t.dti / 100 - debts;
- const inCity = price >= (city ? city.low : 0);
- return '<div class="tier-card ' + (i===1?'selected':'') + '" onclick="selectTier(this,' + price + ',' + i + ')">'
- + '<div class="tier-name">' + t.name + '</div>'
- + '<div class="tier-price">$' + (price/1000).toFixed(0) + 'k</div>'
- + '<div class="tier-mo">≈ $' + Math.round(mo).toLocaleString() + '/mo payment</div>'
- + '<div class="tier-dti">' + t.desc + '</div>'
- + (inCity
- ? '<div style="font-size:10px;color:#27ae60;margin-top:4px;font-weight:700">✓ homes exist here</div>'
- : '<div style="font-size:10px;color:#e67e22;margin-top:4px">stretch for this city</div>')
- + '</div>';
- }).join('');
-
- selectedTierPrice = maxHome(38); // default to moderate
- document.getElementById('tierNote').textContent = '💡 These estimates are based on your income' + (monthly>0 ? ' of $'+Math.round(monthly).toLocaleString()+'/mo' : '') + '. Tap a tier to select it.';
-}
-
-function selectTier(el, price, idx) {
- document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
- el.classList.add('selected');
- selectedTierPrice = price;
-}
-
-// ============================================================
-// UTILITY HELPERS
-// ============================================================
-function parseNum(id) {
- const el = document.getElementById(id);
- if (!el) return 0;
- const n = parseFloat(el.value.replace(/,/g,'').replace(/\$/g,'').trim());
- return isNaN(n) ? 0 : n;
-}
-
-function fmtInput(el) {
- let raw = el.value.replace(/[^0-9.]/g, '');
- if (!raw) return;
- const parts = raw.split('.');
- parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
- el.value = parts.join('.');
-}
-
-const fmt = n => '$' + Math.round(n).toLocaleString();
-const fmtp = n => Math.round(n) + '%';
-
-function checkDTI() {
- const mo = getMonthlyIncome();
- const debt = parseNum('debts');
- document.getElementById('dtiWarn').style.display = (mo > 0 && debt / mo > 0.30) ? 'block' : 'none';
-}
-
-function setDot(n) {
- for (let i = 1; i <= 4; i++) {
- const d = document.getElementById('dot' + i);
- d.classList.remove('active', 'done');
- if (i < n) d.classList.add('done');
- if (i === n) d.classList.add('active');
- }
-}
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-function goStep1() {
- ['step2','step3','step4','loadingState'].forEach(id => document.getElementById(id).classList.add('hidden'));
- document.getElementById('step1').classList.remove('hidden');
- setDot(1); window.scrollTo(0, 0);
-}
-
-function goStep2() {
- const mo = getMonthlyIncome();
- if (!mo || mo < 50) { alert('Please enter your income to continue.'); return; }
- document.getElementById('step1').classList.add('hidden');
- document.getElementById('step2').classList.remove('hidden');
- setDot(2); window.scrollTo(0, 0);
- if (mo > 0) showBudgetTiers(selectedCity || { name:'your area', low:0, high:9999999, median:300000 });
-}
-
-function getHomePrice() {
- return priceMode === 'know' ? parseNum('homePrice') : (selectedTierPrice || 0);
-}
-
-function goReview() {
- const hp = getHomePrice();
- const st = document.getElementById('state').value;
- if (!hp || hp < 10000) { alert(priceMode==='know' ? 'Please enter a home price.' : 'Please select a budget tier or search for your city.'); return; }
- if (!st) { alert('Please select your state.'); return; }
-
- const mo = getMonthlyIncome();
- const emp = document.getElementById('employment').value;
- const empLabels = {
- fulltime:'W2 Full-Time', parttime:'W2 Part-Time', commission:'Commission/Variable',
- multiple:'Multiple W2 Jobs', self:'Self-Employed (1099)', gig:'Gig Worker',
- business:'Business Owner', retired:'Retired — Pension/401k', social:'Retired — Social Security',
- disability:'Disability Benefits', military:'Military/Veteran', seasonal:'Seasonal Worker', unemployed:'Not Employed'
- };
- let incDisp = '';
- const hrs = parseFloat(document.getElementById('hoursPerWeek').value) || 40;
- if (freq==='hourly') incDisp = '$' + parseNum('income').toFixed(2) + '/hr × ' + hrs + 'hrs = ' + fmt(mo) + '/mo';
- else if (freq==='weekly') incDisp = '$' + parseNum('income').toLocaleString() + '/wk = ' + fmt(mo) + '/mo';
- else if (freq==='annual') incDisp = '$' + parseNum('income').toLocaleString() + '/yr = ' + fmt(mo) + '/mo';
- else incDisp = fmt(mo) + '/month';
-
- const priceDisp = (priceMode==='dont' && selectedCity)
- ? fmt(hp) + ' (' + selectedCity.name + ' — selected tier)'
- : fmt(hp);
-
- const rows = [
- { f:'Income', v:incDisp, s:1 },
- { f:'Credit Score', v:'' + (+document.getElementById('creditSlider').value), s:1 },
- { f:'Down Payment', v:fmt(parseNum('downpayment')) + ' saved', s:1 },
- { f:'Monthly Debts', v:fmt(parseNum('debts')) + '/mo', s:1 },
- { f:'Employment', v:empLabels[emp] || emp, s:1 },
- { f:'Home Price', v:priceDisp, s:2 },
- { f:'State', v:st, s:2 },
- { f:'Veteran', v:document.getElementById('veteran').value==='yes' ? 'Yes — VA eligible' : 'No', s:2 },
- ];
-
- document.getElementById('reviewRows').innerHTML = rows.map(r =>
- '<div class="review-row">'
- + '<div class="review-field">' + r.f + '</div>'
- + '<div class="review-value">' + r.v + '</div>'
- + '<span class="review-edit" onclick="goStep' + r.s + '()">Edit</span>'
- + '</div>'
- ).join('');
-
- document.getElementById('step2').classList.add('hidden');
- document.getElementById('step3').classList.remove('hidden');
- setDot(3); window.scrollTo(0, 0);
-}
-
-function analyzeAndShow() {
- document.getElementById('step3').classList.add('hidden');
- document.getElementById('loadingState').classList.remove('hidden');
- setDot(4); window.scrollTo(0, 0);
-
- const msgs = [
- ['Analyzing your situation...', 'Checking loan program eligibility'],
- ['Running the numbers...', 'Calculating what you can afford'],
- ['Finding your programs...', 'Matching you to assistance options'],
- ['Building your roadmap...', 'Creating your personal action plan'],
- ];
- let idx = 0;
- const iv = setInterval(() => {
- idx = (idx + 1) % msgs.length;
- document.getElementById('loadingText').textContent = msgs[idx][0];
- document.getElementById('loadingSub').textContent = msgs[idx][1];
- }, 900);
- setTimeout(() => { clearInterval(iv); document.getElementById('loadingState').classList.add('hidden'); showResults(); }, 3600);
-}
-
-// ============================================================
-// MAIN RESULTS ENGINE
-// ============================================================
-function showResults() {
- const monthly = getMonthlyIncome();
- const credit = +document.getElementById('creditSlider').value;
- const downpay = parseNum('downpayment');
- const debtsRaw = parseNum('debts');
- const homePrice = getHomePrice();
- const veteran = document.getElementById('veteran').value === 'yes';
- const priority = document.getElementById('priority').value;
- const employment = document.getElementById('employment').value;
- const state = document.getElementById('state').value;
-
- // Interest rate based on credit score
- const rate = credit>=740?0.0675:credit>=700?0.0700:credit>=660?0.0725:credit>=620?0.0775:0.0850;
- const r = rate / 12, n = 360;
-
- // FHA parameters
- const fhaDownPct = credit >= 580 ? 0.035 : 0.10;
- const fhaDownAmt = homePrice * fhaDownPct;
- const fhaPandI = homePrice > 0 ? (homePrice - fhaDownAmt) * r * Math.pow(1+r,n) / (Math.pow(1+r,n) - 1) : 0;
- const fhaMIP = (homePrice * 0.0055) / 12; // FHA annual MIP
- const fhaTaxIns = homePrice * 0.014 / 12; // estimated tax + insurance
- const fhaTotal = fhaPandI + fhaMIP + fhaTaxIns;
-
- // DTI calculations — BOTH front-end and back-end
- const FHA_FRONT = 31;
- const FHA_BACK = 43;
- const frontEndDTI = monthly > 0 ? (fhaTotal / monthly) * 100 : 0;
- const backEndDTI = monthly > 0 ? ((fhaTotal + debtsRaw) / monthly) * 100 : 0;
- const canAffordFHA = backEndDTI <= FHA_BACK && credit >= 500 && employment !== 'unemployed';
-
- // Max affordable budget
- const availForHousing = Math.max(0, (monthly * FHA_BACK / 100) - debtsRaw);
- const maxLoan = availForHousing > 0 ? availForHousing * ((1 - Math.pow(1+r, -n)) / r) : 0;
- const maxBudget = maxLoan / (1 - fhaDownPct);
-
- // Gaps
- const downGap = Math.max(0, fhaDownAmt - downpay);
- const saveRate = monthly * 0.10;
- const downGapMos = saveRate > 0 ? Math.ceil(downGap / saveRate) : 0;
- const creditGap = Math.max(0, 580 - credit);
-
- // Program eligibility
- const fhaPossible = downpay >= fhaDownAmt && credit >= 500 && employment !== 'unemployed';
- const convPossible = downpay >= homePrice * 0.05 && credit >= 620;
- const vaPossible = (veteran || employment === 'military') && employment !== 'unemployed';
- const usdaPossible = priority === 'rural' && monthly * 12 <= 115000 && credit >= 580;
- const anyProgram = fhaPossible || convPossible || vaPossible || usdaPossible;
-
- // Store globally for PDF and AI report
- G = { monthly, credit, downpay, debtsRaw, homePrice, veteran, priority, employment, state,
- fhaTotal, fhaDownAmt, fhaDownPct, canAffordFHA, anyProgram, maxBudget, downGap,
- downGapMos, creditGap, frontEndDTI, backEndDTI, fhaPandI, fhaMIP, fhaTaxIns };
-
- // Verdict
- let verdict, verdictSub, verdictClass;
- if (anyProgram && canAffordFHA) {
- verdict = '🏠 You can buy a home right now'; verdictClass = 'ready';
- verdictSub = 'You qualify for at least one loan program and your debt-to-income ratio is within FHA guidelines.';
- } else if (anyProgram && !canAffordFHA) {
- verdict = '📍 Almost there — a few adjustments and you\'re in'; verdictClass = 'almost';
- verdictSub = 'You may qualify for a loan program, but this home\'s payment pushes your DTI above the FHA limit. Here\'s exactly what to change.';
- } else {
- verdict = '🌱 You\'re building toward it — and that\'s okay'; verdictClass = 'building';
- verdictSub = 'You\'re not ready today, but you\'re closer than you think. Here\'s your personal roadmap with concrete steps.';
- }
- document.getElementById('verdictText').textContent = verdict;
- document.getElementById('verdictText').className = 'result-verdict ' + verdictClass;
- document.getElementById('verdictSub').textContent = verdictSub;
-
- if (!anyProgram || !canAffordFHA) {
- document.getElementById('encBar').classList.remove('hidden');
- document.getElementById('encText').textContent = 'Every homeowner started exactly where you are. Having a clear, honest plan is what makes the difference.';
- }
-
- // Metrics tiles
- const mg = document.getElementById('metricsGrid'); mg.innerHTML = '';
- [
- { label:'Est. Total Monthly Cost', value:fmt(fhaTotal), note:'P&I + MIP + est. tax & insurance', hl:true },
- { label:'Max Affordable Budget', value:fmt(maxBudget>0?maxBudget:0), note:'Based on income & debts', hl:false },
- { label:'Down Payment Needed', value:fmt(fhaDownAmt), note:(fhaDownPct*100).toFixed(1)+'% FHA minimum', hl:false },
- { label:'Interest Rate Estimate', value:(rate*100).toFixed(2)+'%', note:'Based on your credit score', hl:false },
- ].forEach(t => {
- const d = document.createElement('div'); d.className = 'mt' + (t.hl?' hl':'');
- d.innerHTML = '<div class="mt-label">' + t.label + '</div><div class="mt-value">' + t.value + '</div><div class="mt-note">' + t.note + '</div>';
- mg.appendChild(d);
- });
-
- // DTI bars
- const dr = document.getElementById('dtiRows'); dr.innerHTML = '';
- [
- { label:'Front-End DTI', sublabel:'Housing costs only — FHA standard ≤ ' + FHA_FRONT + '%', pct:frontEndDTI, max:FHA_FRONT },
- { label:'Back-End DTI', sublabel:'All debts + housing — FHA limit ≤ ' + FHA_BACK + '%', pct:backEndDTI, max:FHA_BACK },
- ].forEach(row => {
- const c = row.pct <= row.max*0.80 ? 'green' : row.pct <= row.max ? 'amber' : 'red';
- const bw = Math.min(row.pct / (row.max * 1.4) * 100, 100);
- const d = document.createElement('div');
- d.innerHTML = '<div class="dti-row"><div class="dti-label">' + row.label + '</div>'
- + '<div class="dti-bar-wrap"><div class="dti-bar ' + c + '" style="width:' + bw + '%"></div></div>'
- + '<div class="dti-pct ' + c + '">' + fmtp(row.pct) + '</div></div>'
- + '<div class="dti-sublabel">' + row.sublabel + ' · ' + (row.pct<=row.max ? '✓ Within guidelines' : '⚠ Above limit — see action plan') + '</div>';
- dr.appendChild(d);
- });
- document.getElementById('dtiBreakdown').innerHTML =
- '<strong>Monthly breakdown:</strong> P&I ' + fmt(fhaPandI) + ' + FHA insurance ' + fmt(fhaMIP) + ' + est. tax & insurance ' + fmt(fhaTaxIns) + ' = <strong>' + fmt(fhaTotal) + '/mo total</strong><br>'
- + 'Your monthly income: ' + fmt(monthly) + ' · Existing debts: ' + fmt(debtsRaw) + '/mo';
-
- // Loan programs
- document.getElementById('programsHdr').textContent = anyProgram ? '✅ Loan programs you may qualify for' : '📋 Loan programs to work toward';
- const lp = document.getElementById('loanPrograms'); lp.innerHTML = '';
- const progs = [];
- if (vaPossible) progs.push({ icon:'🎖️', name:'VA Loan — Zero Down for Veterans', cls:'gb', desc:'No down payment. No PMI. Best rates available. If you served, this is almost always your best option.', pill:'$0 Down', pg:'gold' });
- if (usdaPossible) progs.push({ icon:'🌾', name:'USDA Rural Development', cls:'gb', desc:'Zero down for eligible rural and suburban areas in ' + state + '. Income limits apply.', pill:'$0 Down', pg:'gold' });
- if (fhaPossible) progs.push({ icon:'🏛️', name:'FHA Loan', cls:'', desc:(fhaDownPct*100).toFixed(1) + '% minimum down. Most common first-time buyer loan. More lenient on credit and DTI than conventional.', pill:fmt(fhaDownAmt) + ' needed', pg:'' });
- if (convPossible) progs.push({ icon:'🏦', name:'Conventional (5% Down)', cls:'', desc:'5% down with 620+ credit. No upfront mortgage insurance. Better long-term cost past 20% equity.', pill:fmt(homePrice*0.05) + ' needed', pg:'' });
- if (!anyProgram) progs.push({ icon:'📈', name:'FHA — Your Target Program', cls:'', desc:'Once your credit reaches 580 and savings hit ' + fmt(fhaDownAmt) + ', FHA is your fastest path.', pill:'Your target', pg:'' });
- progs.push({ icon:'🤝', name:'Down Payment Assistance', cls:'', desc:state + ' has programs offering grants and low-interest loans for down payments — many first-time buyers never find these. Search "' + state + ' first time buyer down payment assistance" or visit hud.gov.', pill:'Often free grants', pg:'gold' });
- progs.forEach(p => {
- const d = document.createElement('div'); d.className = 'program-card ' + p.cls;
- d.innerHTML = '<div class="pi">' + p.icon + '</div><div><div class="pn">' + p.name + '</div><div class="pd">' + p.desc + '</div><span class="pp ' + p.pg + '">' + p.pill + '</span></div>';
- lp.appendChild(d);
- });
-
- // Action steps
- document.getElementById('stepsHdr').textContent = '🗺️ Your personal action plan';
- const as = document.getElementById('actionSteps'); as.innerHTML = '';
- const steps = [];
- if (creditGap > 0) steps.push({ title:'Raise your credit score ' + creditGap + ' points', desc:'Pay credit cards below 30% of their limit — this alone can add 20–50 points. Dispute errors at annualcreditreport.com (free). Don\'t open any new accounts right now.', time:creditGap<=20?'30–60 days':creditGap<=60?'3–6 months':'6–12 months' });
- if (downGap > 0) steps.push({ title:'Save ' + fmt(downGap) + ' more for your down payment', desc:'At 10% of monthly income saved you\'re ' + (downGapMos<=1?'almost there':'about ' + downGapMos + ' months away') + '. Also research ' + state + '\'s down payment assistance — you may not need all of this yourself.', time:downGapMos<=1?'Almost there':'~' + downGapMos + ' months' });
- if (backEndDTI > FHA_BACK) steps.push({ title:'Bring your back-end DTI under 43%', desc:'Your DTI is ' + fmtp(backEndDTI) + ', above FHA\'s limit. Paying down ' + fmt(Math.ceil((backEndDTI-FHA_BACK)/100*monthly)) + '/mo in existing debts brings you into range. Focus on your highest-interest debt first.', time:'3–12 months' });
- if (!canAffordFHA && anyProgram && maxBudget > 0 && maxBudget < homePrice) steps.push({ title:'Consider homes priced around ' + fmt(maxBudget*0.85), desc:'At your income, that range keeps your DTI comfortably under 43%. A starter home now still builds equity — you can move up later.', time:'Recalibrate now' });
- if (['self','gig','business','commission','seasonal'].includes(employment)) steps.push({ title:'Document your income thoroughly', desc:'Lenders need 2 years of tax returns showing consistent income. A mortgage broker experienced with your income type can make a significant difference.', time:'Start now' });
- steps.push({ title:'Talk to a free HUD counselor in ' + state, desc:'HUD-approved counselors provide free personalized guidance on credit, local assistance programs, and lenders. Find one at hud.gov/housingcounseling.', time:'This week — free' });
- steps.push({ title:'Get pre-approved with 2–3 lenders', desc:'Pre-approval is free and shows sellers you\'re serious. Getting 3 quotes can save thousands — local credit unions often beat big banks.', time:anyProgram&&canAffordFHA?'Start this week':'When you\'re ready' });
- steps.forEach((s, i) => {
- const d = document.createElement('div'); d.className = 'action-step';
- d.innerHTML = '<div class="snb">' + (i+1) + '</div><div><div class="st">' + s.title + '</div><div class="sd">' + s.desc + '</div><div class="stm">⏱ ' + s.time + '</div></div>';
- as.appendChild(d);
- });
-
- // Timeline
- const tc = document.getElementById('tlCard'); tc.style.display = 'block';
- const tb = document.getElementById('tlBar'); tb.innerHTML = '';
- const tl = [];
- if (anyProgram && canAffordFHA) {
- tl.push({ p:'This week', d:'Get pre-approved — free, takes 1–2 days' });
- tl.push({ p:'Weeks 2–4', d:'Tour homes with a buyer\'s agent' });
- tl.push({ p:'Month 1–3', d:'Make an offer, inspection, appraisal' });
- tl.push({ p:'Month 2–4', d:'🏠 Close and get your keys' });
- } else {
- const mos = Math.max(downGapMos, creditGap>40?6:creditGap>0?3:0, backEndDTI>FHA_BACK?6:0, 1);
- tl.push({ p:'Month 1', d:'Credit report, savings plan, HUD counselor, DPA research in ' + state });
- if (mos > 2) tl.push({ p:'Month ' + Math.ceil(mos/2), d:'Progress check — credit, savings, and debts' });
- tl.push({ p:'Month ' + mos, d:'Pre-approval and begin home search' });
- tl.push({ p:'Month ' + (mos+2), d:'🏠 Close and get your keys' });
- }
- tl.forEach(item => {
- const d = document.createElement('div'); d.className = 'tl-item';
- d.innerHTML = '<div class="tl-period">' + item.p + '</div><div class="tl-desc">' + item.d + '</div>';
- tb.appendChild(d);
- });
-
- document.getElementById('step4').classList.remove('hidden');
- window.scrollTo(0, 0);
-}
-
-// ============================================================
-// STRIPE PAYMENT HANDLER
-// STATUS: NOT YET CONNECTED
-//
-// TO GO LIVE:
-// 1. Create account at stripe.com
-// 2. Create a $7 product in Stripe dashboard
-// 3. Get your publishable key (pk_live_...)
-// 4. Deploy a serverless function (Vercel/Netlify) that:
-// a. Creates a Stripe Checkout session
-// b. On success, calls Anthropic API with user data
-// c. Returns the AI report to the client
-// 5. Replace the alert below with:
-// const stripe = Stripe('pk_live_YOUR_KEY');
-// stripe.redirectToCheckout({ sessionId: 'sess_...' });
-// ============================================================
-function handlePayment() {
- alert('Stripe is not yet connected.\n\nTo go live:\n1. Sign up free at stripe.com\n2. Create a $7 product\n3. Deploy a Vercel serverless function\n4. Replace this function with Stripe checkout\n\nUse the demo button below to preview the report now.');
-}
-
-// ============================================================
-// DEMO REPORT — generates realistic AI-style report
-// In production this content comes from Anthropic API
-// via the serverless backend after Stripe payment
-// ============================================================
-async function runDemoReport() {
- document.getElementById('paywallSection').classList.add('hidden');
- const rc = document.getElementById('reportCard');
- rc.classList.remove('hidden');
- document.getElementById('reportLoading').classList.remove('hidden');
- document.getElementById('reportActions').style.display = 'none';
- document.getElementById('reportText').textContent = '';
- window.scrollTo(0, rc.offsetTop - 20);
-
- await new Promise(r => setTimeout(r, 2000)); // simulate API call delay
- document.getElementById('reportLoading').classList.add('hidden');
-
- const { credit, monthly, downpay, homePrice, fhaTotal, fhaDownAmt, maxBudget, state, backEndDTI, creditGap, downGap, downGapMos, canAffordFHA, anyProgram, employment } = G;
-
- let p1, p2, p3, p4;
- if (canAffordFHA && anyProgram) {
- p1 = 'Based on everything you\'ve shared, you\'re in a genuinely strong position to buy a home. With a ' + credit + ' credit score and ' + fmt(downpay) + ' saved, you clear the FHA requirements and your estimated all-in monthly payment of ' + fmt(fhaTotal) + ' fits within your income. That\'s not encouragement — that\'s just math.';
- p2 = 'Your most important next step is getting pre-approved, and the reason it matters so much is that it transforms you from someone looking at homes into a buyer. Sellers take pre-approved buyers seriously, and in a competitive market that difference often determines who gets the house.';
- p3 = 'What most buyers in ' + state + ' don\'t realize is that your state has down payment assistance programs that could reduce what you bring to closing — some are outright grants you never repay. A free HUD-approved housing counselor can tell you exactly which ones you qualify for.';
- p4 = 'This week, go to hud.gov/housingcounseling and schedule a free 30-minute call with a HUD counselor in ' + state + '. They\'ll review your situation, identify local programs, and point you toward the most buyer-friendly lenders in your market. That one conversation is probably the highest-value thing you can do right now.';
- } else if (anyProgram) {
- p1 = 'You\'re closer than the numbers might feel. Your ' + credit + ' credit score puts you within reach of FHA programs, and with ' + fmt(downpay) + ' saved you\'re actively building. The main gap right now is that the monthly cost on this home pushes your debt-to-income ratio above FHA\'s limit — but that\'s a solvable problem, not a permanent wall.';
- p2 = (downGap > 0 ? 'Your most important move is closing the ' + fmt(downGap) + ' down payment gap' : 'Your most important move is bringing your monthly debts down') + '. The reason this is the priority is that it directly changes your DTI — the number lenders care about most. Even a modest improvement shifts you from "almost" to "approved."';
- p3 = 'What most first-time buyers in ' + state + ' don\'t know is that down payment assistance programs can cover part — sometimes all — of the down payment, and many are grants that never need to be repaid. They exist specifically for buyers in your situation. Most people miss them because their lender doesn\'t bring them up.';
- p4 = 'This week, search "' + state + ' first time home buyer down payment assistance" and look at .gov and .org results. Identify 2–3 programs and check your eligibility. This one hour of research could change your timeline by months.';
- } else {
- p1 = 'Right now the numbers need some work before a lender will say yes — but the gap is specific and measurable, which means it\'s fixable. ' + (creditGap > 0 ? 'Your credit score needs to reach 580 to unlock FHA — you\'re ' + creditGap + ' points away.' : 'Your credit is in a workable range.') + ' The path forward is clear, even if it takes some time.';
- p2 = 'The single most important thing to focus on is your credit score, because it\'s the fastest lever available and it opens everything else. Paying credit card balances below 30% of your limit can add 20–50 points within 60 days. Don\'t open new accounts right now — it temporarily drops your score when you need it moving up.';
- p3 = 'Here\'s what most people in your situation don\'t know: HUD-approved housing counselors offer free sessions specifically for buyers who aren\'t ready yet. They look at your actual credit report, identify exactly what\'s dragging your score, and give you a personalized sequence. It\'s professional financial coaching at zero cost.';
- p4 = 'This week, go to annualcreditreport.com and pull your free credit report. For each credit card, calculate 30% of the limit — that\'s your target balance. If any card is above that, put your next extra payment there. You can start today, and it begins moving your number immediately.';
- }
-
- document.getElementById('reportText').textContent = [p1, p2, p3, p4].join('\n\n');
- document.getElementById('reportActions').style.display = 'flex';
-}
-
-// ============================================================
-// PDF DOWNLOAD — using jsPDF from CDN
-// STATUS: WORKING (client-side, no backend needed)
-// ============================================================
-function downloadPDF() {
- try {
- const { jsPDF } = window.jspdf;
- const doc = new jsPDF({ unit:'pt', format:'letter' });
- const margin = 60, pageW = 612, contentW = pageW - margin * 2;
- let y = margin;
-
- // Header bar
- doc.setFillColor(26, 58, 42);
- doc.rect(0, 0, pageW, 70, 'F');
- doc.setTextColor(240, 196, 106);
- doc.setFontSize(22); doc.setFont('helvetica', 'bold');
- doc.text('FirstKey', margin, 44);
- doc.setTextColor(200, 220, 200);
- doc.setFontSize(10); doc.setFont('helvetica', 'normal');
- doc.text('Personal Homebuyer Analysis Report', margin + 86, 44);
- doc.setTextColor(150, 180, 150);
- doc.text(new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}), pageW - margin, 44, { align:'right' });
- y = 100;
-
- // Verdict
- doc.setTextColor(26, 58, 42); doc.setFontSize(15); doc.setFont('helvetica', 'bold');
- doc.text(document.getElementById('verdictText').textContent, margin, y); y += 22;
-
- // Your Information
- doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(26, 58, 42);
- doc.text('YOUR INFORMATION', margin, y); y += 13;
- doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(74, 90, 74);
- const freqLbl = { hourly:'Hourly', weekly:'Weekly', monthly:'Monthly', annual:'Annual' }[freq];
- [
- 'Monthly Income: ' + fmt(G.monthly) + ' (entered as ' + freqLbl + ')',
- 'Credit Score: ' + G.credit,
- 'Down Payment Saved: ' + fmt(G.downpay),
- 'Monthly Debt Payments: ' + fmt(G.debtsRaw),
- 'Target Home Price: ' + fmt(G.homePrice) + ' State: ' + G.state,
- 'Veteran/Military: ' + (G.veteran ? 'Yes' : 'No') + ' Employment: ' + G.employment,
- ].forEach(l => { doc.text(l, margin, y); y += 13; });
- y += 6;
-
- // Key Figures
- doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(26, 58, 42);
- doc.text('KEY FIGURES', margin, y); y += 13;
- doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(74, 90, 74);
- [
- 'Estimated Monthly Payment (FHA): ' + fmt(G.fhaTotal),
- ' Breakdown: P&I ' + fmt(G.fhaPandI) + ' + FHA insurance ' + fmt(G.fhaMIP) + ' + Tax & insurance est. ' + fmt(G.fhaTaxIns),
- 'Minimum Down Payment (' + (G.fhaDownPct*100).toFixed(1) + '% FHA): ' + fmt(G.fhaDownAmt),
- 'Max Affordable Budget: ' + fmt(G.maxBudget),
- 'Front-End DTI (housing / income): ' + Math.round(G.frontEndDTI) + '% (FHA standard ≤ 31%)',
- 'Back-End DTI (all debts / income): ' + Math.round(G.backEndDTI) + '% (FHA limit ≤ 43%)',
- ].forEach(l => {
- const lines = doc.splitTextToSize(l, contentW);
- doc.text(lines, margin, y); y += lines.length * 13;
- });
- y += 6;
-
- // AI Report
- const reportText = document.getElementById('reportText').textContent;
- if (reportText) {
- doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(26, 58, 42);
- doc.text('YOUR PERSONAL ASSESSMENT', margin, y); y += 13;
- doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(74, 90, 74);
- reportText.split('\n\n').forEach(para => {
- const lines = doc.splitTextToSize(para, contentW);
- if (y + lines.length * 13 > 740) { doc.addPage(); y = margin; }
- doc.text(lines, margin, y); y += lines.length * 13 + 7;
- });
- }
-
- // Action steps
- const stepEls = document.querySelectorAll('.action-step');
- if (stepEls.length > 0) {
- if (y > 650) { doc.addPage(); y = margin; }
- doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(26, 58, 42);
- doc.text('YOUR ACTION PLAN', margin, y); y += 13;
- doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(74, 90, 74);
- stepEls.forEach((el, i) => {
- const title = el.querySelector('.st')?.textContent || '';
- const desc = el.querySelector('.sd')?.textContent || '';
- const time = el.querySelector('.stm')?.textContent || '';
- const text = (i+1) + '. ' + title + ' (' + time + ')\n ' + desc;
- const lines = doc.splitTextToSize(text, contentW);
- if (y + lines.length * 13 > 740) { doc.addPage(); y = margin; }
- doc.text(lines, margin, y); y += lines.length * 13 + 5;
- });
- }
-
- // Footer on all pages
- const pageCount = doc.internal.getNumberOfPages();
- for (let i = 1; i <= pageCount; i++) {
- doc.setPage(i);
- doc.setFontSize(8); doc.setTextColor(160, 170, 160);
- doc.text('FirstKey · Educational purposes only · Not financial advice · Consult a HUD counselor or licensed mortgage professional.', margin, 760);
- doc.text('Page ' + i + ' of ' + pageCount, pageW - margin, 760, { align:'right' });
- }
-
- doc.save('FirstKey-Homebuyer-Report.pdf');
- } catch (e) {
- console.error('PDF generation error:', e);
- window.print(); // fallback to browser print
- }
-}
-
-// ============================================================
-// RE-RUN LOGIC — one free update per paid session
-// ============================================================
-function offerRerun() {
- if (rerunUsed) {
- alert('You\'ve already used your one free update.\n\nTo run a completely new analysis, use the "Start completely over" button below.');
- return;
- }
- document.getElementById('rerunNotice').classList.remove('hidden');
- document.getElementById('rerunBtn').style.display = 'none';
-}
-
-function doRerun() {
- rerunUsed = true;
- document.getElementById('rerunNotice').classList.add('hidden');
- document.getElementById('reportCard').classList.add('hidden');
- document.getElementById('paywallSection').classList.add('hidden');
- goReview();
- const btn = document.querySelector('#step3 .btn-primary');
- btn.textContent = '✓ Confirmed — Regenerate My Report';
- btn.onclick = function() {
- analyzeAndShow();
- setTimeout(async () => {
- document.getElementById('paywallSection').classList.add('hidden');
- await runDemoReport();
- document.getElementById('rerunBtn').style.display = 'none';
- }, 4200);
- };
-}
-
-// ============================================================
-// RESTART — resets ALL state
-// ============================================================
-function restart() {
- ['income','downpayment','debts','homePrice','citySearch'].forEach(id => {
- const el = document.getElementById(id);
- if (el) { el.value = ''; el.classList.remove('error'); }
- });
- document.getElementById('hoursPerWeek').value = '40';
- document.getElementById('creditSlider').value = 620;
- document.getElementById('creditNum').textContent = '620';
- document.getElementById('creditLbl').textContent = 'Fair Credit';
- document.getElementById('creditLbl').className = 'credit-lbl fair';
- document.getElementById('employment').selectedIndex = 0;
- document.getElementById('state').value = '';
- document.getElementById('veteran').value = 'no';
- document.getElementById('priority').value = 'affordable';
- document.getElementById('dtiWarn').style.display = 'none';
- document.getElementById('encBar').classList.add('hidden');
- document.getElementById('reportCard').classList.add('hidden');
- document.getElementById('paywallSection').classList.remove('hidden');
- document.getElementById('rerunNotice').classList.add('hidden');
- document.getElementById('empNote').className = 'emp-note';
- document.getElementById('incomePreview').textContent = '';
- document.getElementById('selectedCityInfo').classList.remove('show');
- document.getElementById('budgetTiers').classList.remove('show');
- document.getElementById('cityResults').classList.remove('show');
-
- freq = 'monthly'; priceMode = 'know'; rerunUsed = false;
- selectedCity = null; selectedTierPrice = null; G = {};
-
- document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
- document.querySelector('.freq-btn[onclick*="monthly"]').classList.add('active');
- document.getElementById('hoursRow').className = 'hours-row';
- document.getElementById('incomeHint').textContent = 'Enter your monthly income before taxes';
- document.getElementById('income').placeholder = '9,500';
- setPriceMode('know');
- goStep1();
-}
-
-// ============================================================
-// CREDIT SLIDER INIT
-// ============================================================
-const slider = document.getElementById('creditSlider');
-const cN = document.getElementById('creditNum');
-const cL = document.getElementById('creditLbl');
-slider.addEventListener('input', () => {
- const v = +slider.value; cN.textContent = v;
- if (v < 580) { cL.textContent='Poor Credit'; cL.className='credit-lbl poor'; }
- else if (v < 670) { cL.textContent='Fair Credit'; cL.className='credit-lbl fair'; }
- else if (v < 740) { cL.textContent='Good Credit'; cL.className='credit-lbl good'; }
- else { cL.textContent='Excellent Credit'; cL.className='credit-lbl great'; }
+const form = document.getElementById('calcForm');
+const resultsDiv = document.getElementById('results');
+const errorDiv = document.getElementById('error');
+const upgradeBtn = document.getElementById('upgradeBtn');
+const stripeContainer = document.getElementById('stripe-container');
+
+// Initialize Stripe (placeholder - replace with actual key)
+const stripe = Stripe('pk_test_YOUR_KEY_HERE');
+const elements = stripe.elements();
+const cardElement = elements.create('card');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  calculateResults();
 });
 
-// Close city dropdown on outside click
-document.addEventListener('click', e => {
- if (!e.target.closest('.city-search-wrap')) {
- document.getElementById('cityResults').classList.remove('show');
- }
+function calculateResults() {
+  const income = parseFloat(document.getElementById('income').value);
+  const downPayment = parseFloat(document.getElementById('downPayment').value);
+  const savings = parseFloat(document.getElementById('savings').value);
+  const debts = parseFloat(document.getElementById('debts').value);
+  const state = document.getElementById('state').value;
+  const email = document.getElementById('email').value;
+
+  // Validation
+  if (!income || !downPayment || !savings || !debts || !state || !email) {
+    showError('Please fill in all fields');
+    return;
+  }
+
+  if (downPayment > savings) {
+    showError('Down payment cannot exceed savings');
+    return;
+  }
+
+  // Calculations
+  const maxBudget = income * 3; // 3x annual income rule
+  const monthlyIncome = income / 12;
+  const monthlyDebts = debts;
+  const maxMonthlyPayment = monthlyIncome * 0.43; // 43% max ratio
+  const availableForMortgage = maxMonthlyPayment - monthlyDebts;
+  const dtiRatio = (monthlyDebts / monthlyIncome) * 100;
+  
+  // Loan eligibility
+  let loanProgram = 'Conventional';
+  if (downPayment < maxBudget * 0.05) loanProgram = 'FHA';
+  if (state === 'Missouri') loanProgram = 'State Programs Available';
+
+  // Update results
+  document.getElementById('maxBudget').textContent = '$' + maxBudget.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  document.getElementById('dtiRatio').textContent = dtiRatio.toFixed(1) + '%';
+  document.getElementById('monthlyPayment').textContent = '$' + availableForMortgage.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  document.getElementById('loanProgram').textContent = loanProgram;
+
+  // Store for later use
+  window.analysisData = {
+    income, downPayment, savings, debts, state, email,
+    maxBudget, dtiRatio, availableForMortgage, loanProgram
+  };
+
+  resultsDiv.classList.add('show');
+  errorDiv.classList.remove('show');
+
+  // Track conversion in Plausible
+  if (window.plausible) {
+    window.plausible('Calculator Used');
+  }
+}
+
+function showError(msg) {
+  errorDiv.textContent = msg;
+  errorDiv.classList.add('show');
+}
+
+upgradeBtn.addEventListener('click', () => {
+  stripeContainer.classList.add('show');
+  if (!cardElement.parentElement.firstChild) {
+    cardElement.mount('#card-element');
+  }
 });
 
+document.getElementById('submit-payment').addEventListener('click', async () => {
+  // This would handle Stripe payment and Excel generation
+  alert('Payment processing would happen here. For now, generating Excel...');
+  generateExcel();
+});
+
+function generateExcel() {
+  const data = window.analysisData;
+  
+  // Create workbook
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([
+    ['FirstKey Analysis Report'],
+    [],
+    ['Your Information'],
+    ['Annual Income', '$' + data.income.toLocaleString()],
+    ['Down Payment', '$' + data.downPayment.toLocaleString()],
+    ['Current Savings', '$' + data.savings.toLocaleString()],
+    ['Monthly Debts', '$' + data.debts.toLocaleString()],
+    ['State', data.state],
+    [],
+    ['Analysis Results'],
+    ['Max Home Budget', '$' + data.maxBudget.toLocaleString()],
+    ['DTI Ratio', data.dtiRatio.toFixed(1) + '%'],
+    ['Monthly Payment Capacity', '$' + data.availableForMortgage.toLocaleString()],
+    ['Recommended Loan Program', data.loanProgram],
+    [],
+    ['Generated:', new Date().toLocaleDateString()]
+  ]);
+  
+  ws['!cols'] = [{wch: 30}, {wch: 20}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Analysis');
+  XLSX.writeFile(wb, 'FirstKey_Analysis.xlsx');
+}
 </script>
+
 </body>
 </html>
