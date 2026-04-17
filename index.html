@@ -1,435 +1,569 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="First Key — your guide to homeownership. Get the resources, tools, and support you need to buy your first home with confidence." />
-  <title>First Key | Your Path to Homeownership</title>
-
-  <!-- Privacy-friendly analytics by Plausible -->
-  <script async src="https://plausible.io/js/pa-D-wh3tenPxb7FHnAH2yrA.js"></script>
-  <script>
-    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-    plausible.init()
-  </script>
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --brand:    #1a6b4a;
-      --brand-lt: #2d9b6e;
-      --accent:   #f5a623;
-      --dark:     #1c2b2b;
-      --mid:      #4a5f5f;
-      --light:    #f4f7f4;
-      --white:    #ffffff;
-      --radius:   10px;
-      --shadow:   0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      color: var(--dark);
-      background: var(--white);
-      line-height: 1.6;
-    }
-
-    /* ── NAV ── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--white);
-      border-bottom: 1px solid #e0e8e4;
-      padding: 0 5%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-    }
-    .nav-logo {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--brand);
-      text-decoration: none;
-      letter-spacing: -0.5px;
-    }
-    .nav-logo span { color: var(--accent); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a {
-      text-decoration: none;
-      color: var(--mid);
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--brand); }
-    .nav-cta {
-      background: var(--brand);
-      color: var(--white) !important;
-      padding: 0.45rem 1.2rem;
-      border-radius: 6px;
-      transition: background 0.2s !important;
-    }
-    .nav-cta:hover { background: var(--brand-lt) !important; color: var(--white) !important; }
-
-    /* ── HERO ── */
-    .hero {
-      background: linear-gradient(135deg, var(--brand) 0%, #0f4a32 100%);
-      color: var(--white);
-      padding: 100px 5% 90px;
-      text-align: center;
-    }
-    .hero-eyebrow {
-      display: inline-block;
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 50px;
-      padding: 0.3rem 1rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
-    }
-    .hero h1 {
-      font-size: clamp(2.2rem, 5vw, 3.8rem);
-      font-weight: 800;
-      line-height: 1.15;
-      max-width: 760px;
-      margin: 0 auto 1.2rem;
-    }
-    .hero h1 em { color: var(--accent); font-style: normal; }
-    .hero p {
-      font-size: 1.15rem;
-      max-width: 560px;
-      margin: 0 auto 2.5rem;
-      opacity: 0.88;
-    }
-    .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-    .btn-primary {
-      background: var(--accent);
-      color: var(--dark);
-      padding: 0.85rem 2rem;
-      border-radius: var(--radius);
-      font-weight: 700;
-      font-size: 1rem;
-      text-decoration: none;
-      transition: filter 0.2s;
-    }
-    .btn-primary:hover { filter: brightness(1.1); }
-    .btn-secondary {
-      background: rgba(255,255,255,0.12);
-      color: var(--white);
-      border: 2px solid rgba(255,255,255,0.4);
-      padding: 0.85rem 2rem;
-      border-radius: var(--radius);
-      font-weight: 600;
-      font-size: 1rem;
-      text-decoration: none;
-      transition: background 0.2s;
-    }
-    .btn-secondary:hover { background: rgba(255,255,255,0.22); }
-
-    /* ── TRUST BAR ── */
-    .trust-bar {
-      background: var(--light);
-      border-bottom: 1px solid #dde8e0;
-      padding: 1.2rem 5%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 3rem;
-      flex-wrap: wrap;
-      font-size: 0.9rem;
-      color: var(--mid);
-      font-weight: 500;
-    }
-    .trust-bar span::before { content: '✓ '; color: var(--brand); font-weight: 700; }
-
-    /* ── SECTIONS ── */
-    section { padding: 80px 5%; }
-    .section-label {
-      text-align: center;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--brand-lt);
-      margin-bottom: 0.75rem;
-    }
-    h2 {
-      text-align: center;
-      font-size: clamp(1.7rem, 3vw, 2.5rem);
-      font-weight: 800;
-      max-width: 640px;
-      margin: 0 auto 1rem;
-      line-height: 1.25;
-    }
-    .section-sub {
-      text-align: center;
-      color: var(--mid);
-      max-width: 520px;
-      margin: 0 auto 3.5rem;
-    }
-
-    /* ── FEATURES ── */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .feature-card {
-      background: var(--white);
-      border: 1px solid #e0ebe4;
-      border-radius: var(--radius);
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,0.12); }
-    .feature-icon {
-      width: 52px;
-      height: 52px;
-      background: var(--light);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      margin-bottom: 1.2rem;
-    }
-    .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .feature-card p { color: var(--mid); font-size: 0.95rem; }
-
-    /* ── HOW IT WORKS ── */
-    .how-bg { background: var(--light); }
-    .steps { display: flex; gap: 2rem; max-width: 960px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
-    .step {
-      flex: 1 1 200px;
-      max-width: 220px;
-      text-align: center;
-    }
-    .step-number {
-      width: 56px;
-      height: 56px;
-      background: var(--brand);
-      color: var(--white);
-      border-radius: 50%;
-      font-size: 1.3rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1rem;
-    }
-    .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
-    .step p { color: var(--mid); font-size: 0.9rem; }
-
-    /* ── TESTIMONIALS ── */
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    .testimonial {
-      background: var(--white);
-      border: 1px solid #e0ebe4;
-      border-radius: var(--radius);
-      padding: 1.8rem;
-      box-shadow: var(--shadow);
-    }
-    .stars { color: var(--accent); font-size: 1.1rem; margin-bottom: 0.8rem; }
-    .testimonial p { color: var(--dark); font-size: 0.95rem; margin-bottom: 1rem; }
-    .testimonial-author { font-weight: 700; font-size: 0.9rem; }
-    .testimonial-author span { color: var(--mid); font-weight: 400; }
-
-    /* ── CTA BANNER ── */
-    .cta-section {
-      background: linear-gradient(135deg, var(--brand) 0%, #0f4a32 100%);
-      color: var(--white);
-      text-align: center;
-      padding: 80px 5%;
-    }
-    .cta-section h2 { color: var(--white); }
-    .cta-section .section-sub { color: rgba(255,255,255,0.8); }
-    .cta-section .btn-primary { font-size: 1.05rem; padding: 1rem 2.4rem; }
-
-    /* ── FOOTER ── */
-    footer {
-      background: var(--dark);
-      color: rgba(255,255,255,0.6);
-      padding: 3rem 5%;
-      text-align: center;
-      font-size: 0.9rem;
-    }
-    .footer-logo {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--white);
-      margin-bottom: 0.8rem;
-    }
-    .footer-logo span { color: var(--accent); }
-    footer p { max-width: 480px; margin: 0 auto 1rem; }
-    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
-    .footer-links a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
-    .footer-links a:hover { color: var(--white); }
-    .footer-copy { font-size: 0.8rem; }
-
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
-      .trust-bar { gap: 1.2rem; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>First Key — Home Affordability Calculator</title>
+<meta name="description" content="Find out how much home you can afford in 2 minutes.">
+<script async src="https://plausible.io/js/pa-D-wh3tenPxb7FHnAH2yrA.js"></script>
+<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)};plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init();</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--brand:#1a6b4a;--brand-lt:#2d9b6e;--accent:#f5a623;--dark:#1c2b2b;--mid:#4a5f5f;--light:#f4f7f4;--white:#fff;--radius:12px;--shadow:0 4px 20px rgba(0,0,0,.08)}
+body{font-family:'Segoe UI',system-ui,sans-serif;color:var(--dark);background:var(--light);line-height:1.6}
+nav{background:#fff;border-bottom:1px solid #e0e8e4;padding:0 5%;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.logo{font-size:1.4rem;font-weight:800;color:var(--brand);text-decoration:none}
+.logo span{color:var(--accent)}
+.hero{background:linear-gradient(135deg,#1a6b4a,#0f4a32);color:#fff;text-align:center;padding:70px 5% 60px}
+.hero .eyebrow{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:50px;padding:.25rem .9rem;font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.2rem}
+.hero h1{font-size:clamp(1.9rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:1rem}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero p{opacity:.85;max-width:500px;margin:0 auto 2.2rem;font-size:1.05rem}
+.btn-start{background:var(--accent);color:var(--dark);border:0;padding:1rem 2.6rem;border-radius:var(--radius);font-size:1.05rem;font-weight:700;cursor:pointer}
+.btn-start:hover{filter:brightness(1.1)}
+.trust{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;font-size:.82rem;opacity:.75}
+.trust span::before{content:'✓ '}
+section.calc,section.results{max-width:860px;margin:0 auto;padding:2rem 5% 4rem}
+section.calc{max-width:640px;display:none}
+section.results{display:none}
+.progress{display:flex;margin-bottom:2.5rem}
+.pstep{flex:1;text-align:center;font-size:.78rem;font-weight:600;color:var(--mid);padding-bottom:.6rem;position:relative}
+.pstep::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:#dde8e2;border-radius:2px}
+.pstep.active{color:var(--brand)}.pstep.active::after{background:var(--brand)}
+.pstep.done{color:var(--brand-lt)}.pstep.done::after{background:var(--brand-lt)}
+.step{animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.step h2{font-size:1.5rem;font-weight:800;margin-bottom:.4rem}
+.step .sub{color:var(--mid);margin-bottom:1.8rem;font-size:.95rem}
+.field{margin-bottom:1.3rem}
+.field label{display:block;font-size:.86rem;font-weight:600;color:var(--mid);margin-bottom:.35rem}
+.iwrap{position:relative}
+.iwrap .pfx{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mid);font-weight:600;pointer-events:none}
+.iwrap input{width:100%;padding:.7rem 1rem .7rem 26px;border:1.5px solid #cdd8d3;border-radius:8px;font-size:1rem;background:#fff}
+.iwrap input:focus,select:focus{outline:0;border-color:var(--brand)}
+select{width:100%;padding:.7rem 1rem;border:1.5px solid #cdd8d3;border-radius:8px;font-size:1rem;background:#fff}
+.btn{width:100%;background:var(--brand);color:#fff;border:0;padding:.9rem;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;margin-top:.5rem}
+.btn:hover{background:var(--brand-lt)}
+.btn-back{background:0;border:0;color:var(--mid);font-size:.9rem;cursor:pointer;padding:0 0 1rem}
+.rhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.rhead h2{font-size:1.4rem;font-weight:800}
+.isum{background:#fff;border:1px solid #e0ebe4;border-radius:8px;padding:.7rem 1.1rem;font-size:.85rem;color:var(--mid)}
+.isum strong{color:var(--dark)}
+.editlnk{color:var(--brand);text-decoration:none;font-weight:600;font-size:.85rem;display:block;text-align:right;margin-bottom:1.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-bottom:2rem}
+.card{background:#fff;border:1px solid #e0ebe4;border-radius:var(--radius);padding:1.4rem 1.5rem;box-shadow:var(--shadow)}
+.card .lbl{font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mid);margin-bottom:.4rem}
+.card .val{font-size:2rem;font-weight:800;line-height:1.1;margin-bottom:.3rem}
+.card .sub{font-size:.82rem;color:var(--mid)}
+.card.hero-card{border-color:var(--brand);background:linear-gradient(135deg,#f0f9f4,#e8f5ef)}
+.card.hero-card .val{color:var(--brand);font-size:2.4rem}
+.bar-track{background:#e0ebe4;border-radius:4px;height:8px;margin:.6rem 0 .3rem;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.bar-status{font-size:.78rem;font-weight:700}
+.badge{display:inline-block;padding:.25rem .7rem;border-radius:50px;font-size:.78rem;font-weight:700;margin-bottom:.4rem}
+.b-green{background:#e8f5ee;color:var(--brand)}
+.b-yellow{background:#fff8e6;color:#856404}
+.b-blue{background:#e8f0ff;color:#2952cc}
+.b-purple{background:#f3e8ff;color:#6b2fd4}
+.b-red{background:#fde8e8;color:#c0392b}
+#email-sec{background:#fff;border:1px solid #e0ebe4;border-radius:var(--radius);padding:1.8rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+#email-sec h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem}
+#email-sec p{color:var(--mid);font-size:.88rem;margin-bottom:1.2rem}
+.erow{display:flex;gap:.7rem;flex-wrap:wrap}
+.erow input{flex:1;min-width:200px;padding:.7rem 1rem;border:1.5px solid #cdd8d3;border-radius:8px;font-size:1rem}
+.erow input:focus{outline:0;border-color:var(--brand)}
+.btn-email{background:var(--brand);color:#fff;border:0;padding:.7rem 1.4rem;border-radius:8px;font-weight:700;cursor:pointer;white-space:nowrap}
+#email-ok{display:none;color:var(--brand);font-weight:600;font-size:.95rem}
+#prem{border:2px solid var(--accent);border-radius:var(--radius);overflow:hidden;margin-bottom:2rem}
+.phead{background:linear-gradient(135deg,#1c2b2b,#2d3f3f);color:#fff;padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.phead h3{font-size:1.1rem;font-weight:800}
+.price{background:var(--accent);color:var(--dark);padding:.4rem 1rem;border-radius:50px;font-weight:800;font-size:1.1rem}
+.pbody{background:#fff;padding:1.5rem 2rem}
+.pfeat{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1.5rem}
+@media(max-width:480px){.pfeat{grid-template-columns:1fr}}
+.pfeat li{font-size:.9rem;display:flex;gap:.5rem}
+.pfeat li::before{content:'✓';color:var(--brand);font-weight:700}
+.ppreview{background:var(--light);border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.ppreview .blur{filter:blur(4px);font-size:.9rem;color:var(--mid);user-select:none}
+.plock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(244,247,244,.5);font-size:1.5rem;font-weight:800;letter-spacing:.1em}
+.btn-unlock{width:100%;background:linear-gradient(135deg,#f5a623,#e09515);color:var(--dark);border:0;padding:1rem;border-radius:var(--radius);font-size:1.05rem;font-weight:800;cursor:pointer}
+.btn-unlock:hover{filter:brightness(1.05)}
+.snote{text-align:center;font-size:.78rem;color:var(--mid);margin-top:.6rem}
+#ai-sec{display:none;background:#fff;border:1px solid #e0ebe4;border-radius:var(--radius);padding:1.8rem 2rem;margin-bottom:2rem;box-shadow:var(--shadow)}
+#ai-sec h3{font-size:1.1rem;font-weight:800;margin-bottom:1.5rem;color:var(--brand)}
+.aitem{display:flex;gap:1rem;margin-bottom:1.4rem;padding-bottom:1.4rem;border-bottom:1px solid #e8f0ec}
+.aitem:last-child{border:0;margin:0;padding:0}
+.aicon{font-size:1.5rem;flex-shrink:0}
+.atitle{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+.atext{font-size:.88rem;color:var(--mid)}
+.btn-xls{width:100%;background:#217346;color:#fff;border:0;padding:.9rem;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;margin-top:1.5rem}
+.btn-xls:hover{background:#1a5c38}
+footer{background:#1c2b2b;color:rgba(255,255,255,.5);text-align:center;padding:2.5rem 5%;font-size:.85rem}
+footer .flogo{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:.5rem}
+footer .flogo span{color:var(--accent)}
+footer p{max-width:480px;margin:0 auto 1rem}
+</style>
 </head>
 <body>
+<nav>
+  <a href="/" class="logo">First<span>Key</span></a>
+  <span style="font-size:.8rem;color:var(--mid)">Home affordability calculator</span>
+</nav>
 
-  <!-- NAV -->
-  <nav>
-    <a href="#" class="nav-logo">First<span>Key</span></a>
-    <ul class="nav-links">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="#testimonials">Stories</a></li>
-      <li><a href="#get-started" class="nav-cta">Get Started</a></li>
-    </ul>
-  </nav>
+<section class="hero" id="hero-sec">
+  <div class="eyebrow">Free · 2-minute calculator</div>
+  <h1>Find Out <em>Exactly</em> How Much Home You Can Afford</h1>
+  <p>No signup required. Get your max budget, DTI ratio, and loan program recommendation instantly.</p>
+  <button class="btn-start" onclick="startCalc()">Start My Calculation →</button>
+  <div class="trust">
+    <span>Annual income analysis</span>
+    <span>DTI ratio check</span>
+    <span>Loan program match</span>
+    <span>50-state coverage</span>
+  </div>
+</section>
 
-  <!-- HERO -->
-  <header class="hero">
-    <div class="hero-eyebrow">First-time buyer resources</div>
-    <h1>Your <em>First Key</em> to Homeownership Starts Here</h1>
-    <p>We simplify the home-buying journey — from understanding your budget to closing day — so you can move in with confidence.</p>
-    <div class="hero-buttons">
-      <a href="#get-started" class="btn-primary">Get Your Free Guide</a>
-      <a href="#how-it-works" class="btn-secondary">See How It Works</a>
-    </div>
-  </header>
-
-  <!-- TRUST BAR -->
-  <div class="trust-bar">
-    <span>No cost to get started</span>
-    <span>Step-by-step guidance</span>
-    <span>Expert resources</span>
-    <span>Built for first-time buyers</span>
+<section class="calc" id="calc-sec">
+  <div class="progress">
+    <div class="pstep active" id="p1">1 · Income</div>
+    <div class="pstep" id="p2">2 · Savings</div>
+    <div class="pstep" id="p3">3 · Results</div>
   </div>
 
-  <!-- FEATURES -->
-  <section id="features">
-    <p class="section-label">What we offer</p>
-    <h2>Everything You Need to Buy Your First Home</h2>
-    <p class="section-sub">From pre-approval to picking up the keys, First Key walks you through every step.</p>
-
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🏦</div>
-        <h3>Mortgage Made Simple</h3>
-        <p>Understand loan types, rates, and pre-approval in plain English — no jargon, no confusion.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🗺️</div>
-        <h3>Neighborhood Insights</h3>
-        <p>Explore school ratings, commute times, and community data before you fall in love with a listing.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">📋</div>
-        <h3>Offer & Negotiation Help</h3>
-        <p>Know what to offer, how to negotiate, and which contingencies actually protect you.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔑</div>
-        <h3>Closing Day Checklist</h3>
-        <p>A step-by-step checklist so nothing falls through the cracks between contract and key handoff.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">💰</div>
-        <h3>Budget Calculator</h3>
-        <p>Find out exactly how much home you can afford, including taxes, insurance, and HOA fees.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🤝</div>
-        <h3>Trusted Partner Network</h3>
-        <p>Connect with vetted agents, lenders, and inspectors who specialize in first-time buyers.</p>
+  <div class="step" id="step1">
+    <h2>Your Income & Location</h2>
+    <p class="sub">We'll use this to calculate your maximum home budget.</p>
+    <div class="field">
+      <label>Annual Household Income</label>
+      <div class="iwrap"><span class="pfx">$</span>
+        <input type="number" id="income" min="10000" max="1000000" step="1000" value="75000">
       </div>
     </div>
-  </section>
+    <div class="field">
+      <label>State</label>
+      <select id="state"><option value="">— Select your state —</option></select>
+    </div>
+    <button class="btn" onclick="toStep2()">Next: Savings & Debts →</button>
+  </div>
 
-  <!-- HOW IT WORKS -->
-  <section id="how-it-works" class="how-bg">
-    <p class="section-label">The process</p>
-    <h2>Three Steps to Your Front Door</h2>
-    <p class="section-sub">We've distilled the home-buying process into an approachable, repeatable path.</p>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-number">1</div>
-        <h3>Know Your Numbers</h3>
-        <p>Run your budget, check your credit score, and get pre-approved so you shop with confidence.</p>
-      </div>
-      <div class="step">
-        <div class="step-number">2</div>
-        <h3>Find Your Home</h3>
-        <p>Use our tools to narrow your search, compare neighborhoods, and make an informed offer.</p>
-      </div>
-      <div class="step">
-        <div class="step-number">3</div>
-        <h3>Close &amp; Move In</h3>
-        <p>We walk you through inspection, appraisal, and closing so nothing catches you off guard.</p>
+  <div class="step" id="step2" style="display:none">
+    <button class="btn-back" onclick="toStep1()">← Back</button>
+    <h2>Savings & Debts</h2>
+    <p class="sub">Be honest — this gives you the most accurate results.</p>
+    <div class="field">
+      <label>Available Down Payment / Savings</label>
+      <div class="iwrap"><span class="pfx">$</span>
+        <input type="number" id="dp" min="0" step="500" value="10000">
       </div>
     </div>
-  </section>
-
-  <!-- TESTIMONIALS -->
-  <section id="testimonials">
-    <p class="section-label">Real buyers, real stories</p>
-    <h2>They Got Their First Key. You Can Too.</h2>
-    <p class="section-sub">Hear from first-time buyers who used First Key to navigate the process.</p>
-
-    <div class="testimonials-grid">
-      <div class="testimonial">
-        <div class="stars">★★★★★</div>
-        <p>"I had no idea where to start. First Key broke everything down so clearly — I closed on my condo six months later. Total game-changer."</p>
-        <div class="testimonial-author">Marcus T. <span>— First-time buyer, Austin TX</span></div>
-      </div>
-      <div class="testimonial">
-        <div class="stars">★★★★★</div>
-        <p>"The budget calculator alone saved me from overstretching. I found a home I love and my monthly payment is actually comfortable."</p>
-        <div class="testimonial-author">Priya S. <span>— First-time buyer, Atlanta GA</span></div>
-      </div>
-      <div class="testimonial">
-        <div class="stars">★★★★★</div>
-        <p>"The closing checklist is gold. My real estate agent was impressed that I came prepared. We closed on time without a single hiccup."</p>
-        <div class="testimonial-author">Jordan &amp; Leah K. <span>— First-time buyers, Denver CO</span></div>
+    <div class="field">
+      <label>Amount You Save Per Month</label>
+      <div class="iwrap"><span class="pfx">$</span>
+        <input type="number" id="msave" min="0" step="50" value="500">
       </div>
     </div>
-  </section>
-
-  <!-- CTA -->
-  <section id="get-started" class="cta-section">
-    <p class="section-label" style="color:rgba(255,255,255,0.6);">Ready?</p>
-    <h2>Take the First Step Today</h2>
-    <p class="section-sub">Download our free First-Time Buyer's Guide and start your journey toward homeownership.</p>
-    <a href="#" class="btn-primary">Get Your Free Guide</a>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-logo">First<span>Key</span></div>
-    <p>Empowering first-time buyers with the knowledge, tools, and confidence to open their own front door.</p>
-    <div class="footer-links">
-      <a href="#">About</a>
-      <a href="#">Resources</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms</a>
-      <a href="#">Contact</a>
+    <div class="field">
+      <label>Monthly Debt Payments <small style="font-weight:400">(car, loans, cards)</small></label>
+      <div class="iwrap"><span class="pfx">$</span>
+        <input type="number" id="mdebt" min="0" step="50" value="300">
+      </div>
     </div>
-    <p class="footer-copy">&copy; 2026 First Key. All rights reserved.</p>
-  </footer>
+    <button class="btn" onclick="calcAndShow()">Calculate My Budget →</button>
+  </div>
+</section>
+<section class="results" id="res-sec">
+  <div class="rhead">
+    <h2>Your Results</h2>
+    <span class="isum" id="isum"></span>
+  </div>
+  <a href="#" class="editlnk" onclick="editInputs(event)">← Edit My Numbers</a>
 
+  <div class="cards">
+    <div class="card hero-card">
+      <div class="lbl">Max Home Budget</div>
+      <div class="val" id="r-budget">—</div>
+      <div class="sub">3× your annual income</div>
+    </div>
+    <div class="card">
+      <div class="lbl">Monthly Payment Budget</div>
+      <div class="val" id="r-monthly">—</div>
+      <div class="sub">28% of gross monthly income</div>
+    </div>
+    <div class="card">
+      <div class="lbl">Debt-to-Income Ratio</div>
+      <div class="val" id="r-dti">—</div>
+      <div class="bar-track"><div class="bar-fill" id="r-dti-bar"></div></div>
+      <div class="bar-status" id="r-dti-status"></div>
+    </div>
+    <div class="card">
+      <div class="lbl">Down Payment Status</div>
+      <div class="val" id="r-dp">—</div>
+      <div class="sub" id="r-dp-sub">of max home budget</div>
+    </div>
+    <div class="card">
+      <div class="lbl">Recommended Loan Program</div>
+      <div id="r-loan-badge"></div>
+      <div class="val" style="font-size:1.1rem;margin-top:.2rem" id="r-loan-name">—</div>
+      <div class="sub" id="r-loan-sub">—</div>
+    </div>
+    <div class="card">
+      <div class="lbl">Timeline to Ready</div>
+      <div class="val" id="r-time">—</div>
+      <div class="sub" id="r-time-sub">—</div>
+    </div>
+  </div>
+
+  <div id="email-sec">
+    <h3>📩 Get Your Free First-Time Buyer Checklist</h3>
+    <p>We'll send a step-by-step checklist tailored to your loan type and state.</p>
+    <form id="email-form" name="email-capture" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="submitEmail(event)">
+      <input type="hidden" name="form-name" value="email-capture">
+      <input type="hidden" name="income" id="h-income">
+      <input type="hidden" name="state" id="h-state">
+      <input type="hidden" name="max-budget" id="h-budget">
+      <input type="hidden" name="loan-type" id="h-loan">
+      <p style="display:none"><label>Don't fill: <input name="bot-field"></label></p>
+      <div class="erow">
+        <input type="email" name="email" id="email-in" placeholder="your@email.com" required>
+        <button type="submit" class="btn-email">Send Checklist</button>
+      </div>
+    </form>
+    <p id="email-ok">✅ Done! Check your inbox soon.</p>
+  </div>
+
+  <div id="prem">
+    <div class="phead">
+      <h3>🔒 Unlock Your Full Personalized Report</h3>
+      <div class="price">$8.99</div>
+    </div>
+    <div class="pbody">
+      <ul class="pfeat">
+        <li>AI-powered advice based on your numbers</li>
+        <li>Excel report with full budget analysis</li>
+        <li>FHA vs Conventional vs State comparison</li>
+        <li>24-month savings projection</li>
+        <li>Credit score action plan</li>
+        <li>State-specific program details</li>
+      </ul>
+      <div class="ppreview">
+        <div class="blur">Based on your income and DTI ratio, you're a strong candidate for a conventional loan. Your biggest opportunity is increasing your down payment from 4.4% to 20%, saving ~$187/month in PMI and unlocking the best rates available...</div>
+        <div class="plock">🔒 LOCKED</div>
+      </div>
+      <button class="btn-unlock" onclick="openPayment()">🔓 Unlock Full Report — $8.99</button>
+      <p class="snote">🔒 Secure payment via Stripe · One-time purchase · Instant access</p>
+    </div>
+  </div>
+
+  <div id="ai-sec">
+    <h3>✨ Your Personalized Report</h3>
+    <div id="advice"></div>
+    <button class="btn-xls" onclick="downloadExcel()">📊 Download Full Excel Report</button>
+  </div>
+</section>
+
+<footer>
+  <div class="flogo">First<span>Key</span></div>
+  <p>Empowering first-time buyers with the knowledge and tools to open their own front door.</p>
+  <p style="font-size:.78rem">© 2026 First Key. For educational purposes only. Not financial advice.</p>
+</footer>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+// Create a Stripe Payment Link at dashboard.stripe.com/payment-links for $8.99.
+// Set its "After payment" redirect URL to:
+//   https://yourfirstkey.netlify.app/?unlocked=true
+// Then paste the buy.stripe.com URL below:
+const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/REPLACE_WITH_YOUR_LINK';
+// ────────────────────────────────────────────────────────────────────────────
+
+const STATES=[
+["AL","Alabama","Alabama HFA Step Up Program"],["AK","Alaska","AHFC First Home Limited"],
+["AZ","Arizona","Arizona HOME Plus Program"],["AR","Arkansas","ADFA Move-Up"],
+["CA","California","CalHFA MyHome Assistance"],["CO","Colorado","CHFA First Step"],
+["CT","Connecticut","CHFA First-Time Homebuyer"],["DE","Delaware","DSHA Smart Start"],
+["FL","Florida","Florida Housing First Time Homebuyer"],["GA","Georgia","Georgia Dream Homeownership"],
+["HI","Hawaii","HHFDC Affordable Homeownership"],["ID","Idaho","Idaho Housing First Loan"],
+["IL","Illinois","IHDA Access Forgivable"],["IN","Indiana","IHCDA Next Home"],
+["IA","Iowa","IFA FirstHome"],["KS","Kansas","KHRC First Time Homebuyer"],
+["KY","Kentucky","KHC Down Payment Assistance"],["LA","Louisiana","LHC Soft Second"],
+["ME","Maine","MaineHousing First Home"],["MD","Maryland","Maryland Mortgage Program"],
+["MA","Massachusetts","MassHousing Down Payment Assistance"],["MI","Michigan","MSHDA MI Home Loan"],
+["MN","Minnesota","Minnesota Housing Start Up"],["MS","Mississippi","MHC Smart6"],
+["MO","Missouri","MHDC First Place"],["MT","Montana","MBOH Bond Advantage"],
+["NE","Nebraska","NIFA First Home"],["NV","Nevada","Home Is Possible"],
+["NH","New Hampshire","NHHFA Home Flex"],["NJ","New Jersey","NJHMFA Down Payment Assistance"],
+["NM","New Mexico","MFA FirstHome"],["NY","New York","SONYMA Low Interest Rate"],
+["NC","North Carolina","NC Home Advantage Mortgage"],["ND","North Dakota","NDHFA Start"],
+["OH","Ohio","OHFA Your Choice! DPA"],["OK","Oklahoma","OHFA Dream"],
+["OR","Oregon","Oregon Bond Residential Loan"],["PA","Pennsylvania","PHFA HOMEstead DPA"],
+["RI","Rhode Island","RIHousing First Down"],["SC","South Carolina","SC Housing Palmetto Home Advantage"],
+["SD","South Dakota","SDHDA Fixed Rate Plus"],["TN","Tennessee","THDA Great Choice Home Loan"],
+["TX","Texas","TSAHC Homes for Texas Heroes"],["UT","Utah","Utah Housing FirstHome"],
+["VT","Vermont","VHFA Move Market Rate"],["VA","Virginia","Virginia Housing DPA"],
+["WA","Washington","WSHFC Home Advantage"],["WV","West Virginia","WVHDF Homeownership"],
+["WI","Wisconsin","WHEDA Advantage Conventional"],["WY","Wyoming","WCDA Amortizing DPA"],
+["DC","Washington D.C.","DC Open Doors DPA"]
+];
+const U={income:0,state:"",dp:0,msave:0,mdebt:0,email:""};
+const R={budget:0,monthly:0,dti:0,dpPct:0,loan:"",months:0};
+const $=id=>document.getElementById(id);
+const fmt=n=>"$"+Math.round(n).toLocaleString();
+function track(e,p){try{plausible(e,p?{props:p}:undefined)}catch(_){}}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  const sel=$("state");
+  STATES.forEach(s=>{const o=document.createElement("option");o.value=s[0];o.textContent=s[1];sel.appendChild(o)});
+  const params=new URLSearchParams(location.search);
+  if(params.get("unlocked")==="true")handleReturn();
+});
+
+function startCalc(){$("hero-sec").style.display="none";$("calc-sec").style.display="block";track("calculator_started")}
+function toStep2(){
+  const inc=parseFloat($("income").value),st=$("state").value;
+  if(!inc||inc<10000)return alert("Enter your annual income.");
+  if(!st)return alert("Select your state.");
+  $("step1").style.display="none";$("step2").style.display="block";
+  $("p1").classList.add("done");$("p1").classList.remove("active");$("p2").classList.add("active");
+  track("step_1_complete",{state:st});
+}
+function toStep1(){
+  $("step2").style.display="none";$("step1").style.display="block";
+  $("p1").classList.remove("done");$("p1").classList.add("active");$("p2").classList.remove("active");
+}
+function editInputs(e){e&&e.preventDefault();$("res-sec").style.display="none";$("calc-sec").style.display="block";$("step1").style.display="none";$("step2").style.display="block";$("p3").classList.remove("active");$("p2").classList.add("active")}
+
+function calcAndShow(){
+  U.income=parseFloat($("income").value)||0;
+  U.state=$("state").value;
+  U.dp=parseFloat($("dp").value)||0;
+  U.msave=parseFloat($("msave").value)||0;
+  U.mdebt=parseFloat($("mdebt").value)||0;
+  if(!U.income)return alert("Enter your income.");
+  calculate();render();
+  $("calc-sec").style.display="none";$("res-sec").style.display="block";
+  $("p2").classList.add("done");$("p2").classList.remove("active");$("p3").classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+  track("step_2_complete",{loan:R.loan,dti:Math.round(R.dti)});
+}
+
+function calculate(){
+  const m=U.income/12;
+  R.budget=U.income*3;
+  R.monthly=m*0.28;
+  R.dti=U.mdebt/m*100;
+  R.dpPct=U.dp/R.budget*100;
+  const need35=R.budget*0.035;
+  R.months=U.dp<need35?(U.msave>0?Math.ceil((need35-U.dp)/U.msave):999):0;
+  if(R.dti>50)R.loan="none";
+  else if(R.dpPct>=20&&R.dti<43)R.loan="conv-nopmi";
+  else if(R.dpPct>=5&&R.dti<36)R.loan="conv";
+  else if(R.dpPct>=3.5)R.loan="fha";
+  else R.loan="state";
+}
+
+function stateObj(){return STATES.find(s=>s[0]===U.state)||["",U.state,"your state housing authority"]}
+
+function render(){
+  const s=stateObj();
+  $("isum").innerHTML=`<strong>${fmt(U.income)}/yr</strong> · ${s[1]} · <strong>${fmt(U.dp)}</strong> saved · <strong>${fmt(U.mdebt)}/mo</strong> debts`;
+  $("r-budget").textContent=fmt(R.budget);
+  $("r-monthly").textContent=fmt(R.monthly);
+  $("r-dti").textContent=R.dti.toFixed(1)+"%";
+  const bar=$("r-dti-bar"),dtiV=Math.min(R.dti,60);
+  bar.style.width=dtiV+"%";
+  let c,l;
+  if(R.dti<20){c="#27ae60";l="Excellent"}
+  else if(R.dti<36){c="#2ecc71";l="Good"}
+  else if(R.dti<43){c="#f39c12";l="Fair — FHA qualifies"}
+  else if(R.dti<50){c="#e67e22";l="High — FHA max zone"}
+  else{c="#e74c3c";l="Over limit — reduce debts"}
+  bar.style.background=c;
+  $("r-dti-status").style.color=c;$("r-dti-status").textContent=l;
+  $("r-dp").textContent=R.dpPct.toFixed(1)+"%";
+  const gap=Math.max(0,R.budget*0.035-U.dp);
+  $("r-dp-sub").textContent=gap>0?`${fmt(gap)} short of 3.5% FHA minimum`:`✓ Meets FHA 3.5% minimum`;
+  const loans={
+    "conv-nopmi":["b-green","Conventional","No PMI Required","20%+ down → best rates, no mortgage insurance"],
+    "conv":["b-blue","Conventional","Conventional Loan","Strong DTI qualifies for conventional"],
+    "fha":["b-yellow","FHA","FHA Loan","3.5% down, flexible DTI limits"],
+    "state":["b-purple","Assistance",s[2],"State down payment assistance program"],
+    "none":["b-red","Action Needed","Reduce Debts First","DTI exceeds 50% — focus on debt paydown"]
+  };
+  const ln=loans[R.loan]||loans.fha;
+  $("r-loan-badge").innerHTML=`<span class="badge ${ln[0]}">${ln[1]}</span>`;
+  $("r-loan-name").textContent=ln[2];
+  $("r-loan-sub").textContent=ln[3];
+  if(R.months===0){$("r-time").textContent="Ready Now";$("r-time-sub").textContent="You meet the minimum down payment threshold"}
+  else if(R.months===999){$("r-time").textContent="Start Saving";$("r-time-sub").textContent="Set a monthly savings goal to see your timeline"}
+  else{const y=Math.floor(R.months/12),mo=R.months%12;$("r-time").textContent=y>0?`${y}yr ${mo}mo`:`${mo} months`;$("r-time-sub").textContent=`At ${fmt(U.msave)}/mo to reach 3.5% FHA minimum`}
+  $("h-income").value=U.income;$("h-state").value=U.state;$("h-budget").value=R.budget;$("h-loan").value=R.loan;
+}
+
+async function submitEmail(e){
+  e.preventDefault();
+  U.email=$("email-in").value;
+  try{
+    await fetch("/",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(new FormData(e.target)).toString()});
+  }catch(_){}
+  $("email-form").style.display="none";
+  $("email-ok").style.display="block";
+  track("email_captured",{state:U.state,loan:R.loan});
+}
+
+function openPayment(){
+  localStorage.setItem("fk_data",JSON.stringify({U,R,ts:Date.now()}));
+  track("premium_unlock_clicked",{loan:R.loan});
+  const pm=U.email?`?prefilled_email=${encodeURIComponent(U.email)}`:"";
+  location.href=STRIPE_PAYMENT_LINK+pm;
+}
+
+function handleReturn(){
+  const saved=localStorage.getItem("fk_data");
+  history.replaceState({},"","/");
+  if(saved){
+    try{
+      const d=JSON.parse(saved);
+      if(Date.now()-d.ts<3600000){
+        Object.assign(U,d.U);Object.assign(R,d.R);
+        localStorage.removeItem("fk_data");
+        $("income").value=U.income;$("state").value=U.state;$("dp").value=U.dp;$("msave").value=U.msave;$("mdebt").value=U.mdebt;
+        calculate();render();
+        $("hero-sec").style.display="none";$("calc-sec").style.display="none";$("res-sec").style.display="block";
+        $("p1").classList.add("done");$("p2").classList.add("done");$("p3").classList.add("active");
+        unlockPremium();
+        track("payment_complete");
+        return;
+      }
+    }catch(_){}
+  }
+  localStorage.removeItem("fk_data");
+}
+
+function unlockPremium(){
+  $("prem").style.display="none";
+  $("ai-sec").style.display="block";
+  renderAdvice();
+}
+
+function renderAdvice(){
+  const A=generateAdvice();
+  $("advice").innerHTML=A.map(a=>`<div class="aitem"><div class="aicon">${a.i}</div><div><div class="atitle">${a.t}</div><div class="atext">${a.d}</div></div></div>`).join("");
+  track("ai_advice_viewed",{loan:R.loan});
+}
+
+function generateAdvice(){
+  const m=U.income/12,s=stateObj(),out=[];
+
+  // 1 Strength
+  if(R.dpPct>=20)out.push({i:"💪",t:"Elite Down Payment Position",d:`Your ${R.dpPct.toFixed(0)}% down payment eliminates PMI — saving roughly ${fmt(R.budget*0.007/12)}/month vs. a low-down buyer. This gives you immediate equity and the strongest negotiating position with any lender.`});
+  else if(R.dti<20)out.push({i:"💪",t:"Exceptional Debt-to-Income Ratio",d:`Your DTI of ${R.dti.toFixed(1)}% is well below the 36% lenders prefer — top-tier applicant territory. Use this leverage to negotiate origination fees and rate buy-downs.`});
+  else if(U.income>=100000)out.push({i:"💪",t:"Strong Income Foundation",d:`Your ${fmt(U.income)} income gives you a ${fmt(R.budget)} budget and ${fmt(R.monthly)}/mo payment capacity. Lenders need 2 years of W-2s — make sure your documentation is ready.`});
+  else out.push({i:"💪",t:"Consistent Savings Discipline",d:`Saving ${fmt(U.msave)}/month shows lenders the discipline they love. Keep this habit through your purchase — any large deposits in the 3 months before closing require explanation letters.`});
+
+  // 2 Top priority
+  if(R.dti>43){const pd=Math.ceil(U.mdebt-m*0.36);out.push({i:"🎯",t:"Urgent: Reduce Monthly Debt Payments",d:`Your ${R.dti.toFixed(1)}% DTI exceeds most lenders' 43% ceiling. Cut ${fmt(pd)}/month in debts to qualify. Target highest-interest debts first. Eliminating one car payment or card could shift your entire loan eligibility.`});}
+  else if(R.dpPct<3.5){const gap=R.budget*0.035-U.dp;out.push({i:"🎯",t:"Priority: Build to 3.5% Down Payment",d:`You need ${fmt(gap)} more to hit the FHA minimum on a ${fmt(R.budget)} home. At ${fmt(U.msave)}/month that's ${R.months} months — but explore ${s[2]}, which may provide this as a grant or forgivable loan.`});}
+  else if(R.dti>36)out.push({i:"🎯",t:"Unlock Better Rates: Reduce DTI to 36%",d:`You qualify for FHA now, but dropping below 36% DTI opens conventional loan options with lower long-term costs. Paying off ${fmt(U.mdebt-m*0.36)}/month in debt could save thousands over your loan's life.`});
+  else out.push({i:"🎯",t:"Credit Score Is Your Final Lever",d:`With strong income and DTI, your credit score determines your exact rate. Every 20-point improvement above 700 can lower your rate ~0.25%. At ${fmt(R.budget)} that's ${fmt(R.budget*0.0025*0.7)} in savings. Pull free reports at AnnualCreditReport.com now.`});
+
+  // 3 Loan strategy
+  const LA={
+    "conv-nopmi":{i:"🏦",t:"Your Move: Shop 3 Conventional Lenders",d:`With 20%+ down you eliminate ~${fmt(R.budget*0.007/12)}/mo in PMI. Get competing quotes from 3+ lenders within 14 days — all inquiries in that window count as one credit hit. Compare APRs, not rates. Local credit unions often beat big banks.`},
+    "conv":{i:"🏦",t:"Strategy: Conventional With PMI",d:`Your DTI qualifies for conventional. PMI (~${fmt(R.budget*0.005/12)}/mo) cancels automatically at 20% equity — not permanent. Request Lender-Paid MI quotes too; sometimes a slightly higher rate beats monthly PMI. Get 3+ quotes.`},
+    "fha":{i:"🏦",t:"Best Fit: FHA Loan",d:`FHA's 3.5% minimum and 50% DTI tolerance makes it your match. Upfront MIP is 1.75% of the loan (${fmt(R.budget*0.965*0.0175)}) — usually rolled in. Annual MIP is 0.85%/yr. Once you hit 20% equity, refinance to conventional to drop MIP entirely.`},
+    "state":{i:"🏦",t:`Start With ${s[2]}`,d:`${s[2]} likely offers 3–5% in down payment assistance that doesn't need to be repaid. Income limits apply (typically 80–120% of area median). A HUD-approved counselor in ${s[1]} can pre-screen you free: 1-800-569-4287.`},
+    "none":{i:"🏦",t:"Action Plan: Debt Reduction First",d:`With ${R.dti.toFixed(1)}% DTI, no lender will approve you today. Focus entirely on eliminating debts — target highest interest first (avalanche method). Once under 43% DTI, rerun this calculator. Your options will transform.`}
+  };
+  out.push(LA[R.loan]||LA.fha);
+
+  // 4 Timeline
+  if(R.months===0)out.push({i:"📅",t:"You're Ready to Act Now",d:`You meet the minimum threshold today. This week: (1) Pull 3 free credit reports at AnnualCreditReport.com, (2) Get pre-approval letters from 2–3 lenders (not just pre-qualification), (3) Interview 2 buyer's agents who specialize in first-time purchases.`});
+  else if(R.months<=12)out.push({i:"📅",t:`${R.months}-Month Countdown Starts Now`,d:`Use these months strategically: month 1–3 pull credit and dispute errors; month 3–6 build score if needed; month 6+ tour neighborhoods and interview agents. You'll be pre-approved and ready to move fast.`});
+  else out.push({i:"📅",t:`Shorten Your ${(R.months/12).toFixed(1)}-Year Timeline`,d:`At ${fmt(U.msave)}/mo you're ${R.months} months out — but you can cut this. Option A: Apply for ${s[2]} (near-zero timeline). Option B: Look at homes priced at ${fmt(U.income*2.5)}. Option C: Ask family about gift funds — FHA allows 100% gifted down payments.`});
+
+  // 5 State resource
+  out.push({i:"🗺️",t:`${s[1]} Resource: ${s[2]}`,d:`${s[2]} is your state's primary resource. These programs typically offer below-market rates and DPA grants that don't require repayment (with an occupancy requirement). Income and purchase price limits apply. Free HUD-approved housing counselor: 1-800-569-4287 or hud.gov.`});
+
+  return out;
+}
+
+function downloadExcel(){
+  const wb=XLSX.utils.book_new(),s=stateObj();
+  const loanLbl={"conv-nopmi":"Conventional (No PMI)","conv":"Conventional","fha":"FHA","state":"State DPA Program","none":"Action Needed — Reduce Debts"};
+
+  // Sheet 1: Summary
+  const sum=[
+    ["FIRST KEY — HOME AFFORDABILITY REPORT"],
+    [`Generated: ${new Date().toLocaleDateString()}`],
+    [""],
+    ["YOUR PROFILE",""],
+    ["Annual Household Income",U.income],
+    ["State",s[1]],
+    ["Available Down Payment",U.dp],
+    ["Monthly Savings Rate",U.msave],
+    ["Monthly Debt Payments",U.mdebt],
+    [""],
+    ["YOUR RESULTS",""],
+    ["Max Home Budget (3× income)",R.budget],
+    ["Monthly Payment Budget (28%)",R.monthly],
+    ["Debt-to-Income Ratio",(R.dti/100)],
+    ["Down Payment %",(R.dpPct/100)],
+    ["Recommended Loan",loanLbl[R.loan]||""],
+    ["Months Until Ready",R.months===0?"Ready Now":R.months===999?"Set monthly savings":R.months],
+    ["State Assistance Program",s[2]]
+  ];
+  const w1=XLSX.utils.aoa_to_sheet(sum);
+  w1["!cols"]=[{wch:35},{wch:25}];
+  XLSX.utils.book_append_sheet(wb,w1,"Summary");
+
+  // Sheet 2: Monthly Budget
+  const m=U.income/12;
+  const bud=[
+    ["Monthly Budget Breakdown","Monthly","% of Income"],
+    ["Gross Monthly Income",m,1],
+    ["Max Housing Payment (28%)",R.monthly,0.28],
+    ["Current Debt Payments",U.mdebt,U.mdebt/m],
+    ["Total Max Obligations",R.monthly+U.mdebt,(R.monthly+U.mdebt)/m],
+    ["Remaining After Housing+Debts",m-R.monthly-U.mdebt,(m-R.monthly-U.mdebt)/m]
+  ];
+  const w2=XLSX.utils.aoa_to_sheet(bud);
+  w2["!cols"]=[{wch:32},{wch:18},{wch:15}];
+  XLSX.utils.book_append_sheet(wb,w2,"Monthly Budget");
+
+  // Sheet 3: Loan Comparison
+  const pi=(L,r,n)=>{const mr=r/12;return L*mr/(1-Math.pow(1+mr,-n))};
+  const B=R.budget,LF=B*0.965,LC=B*0.9,LS=B;
+  const comp=[
+    [`Loan Comparison (on ${fmt(B)} home)`,"FHA","Conventional","State Program"],
+    ["Down Payment Required",B*0.035,B*0.1,0],
+    ["Loan Amount",LF,LC,LS],
+    ["Interest Rate (est.)",0.065,0.07,0.06],
+    ["Monthly P&I (30yr)",pi(LF,0.065,360),pi(LC,0.07,360),pi(LS,0.06,360)],
+    ["Monthly MIP/PMI",B*0.0085/12,B*0.005/12,0],
+    ["Total Monthly (est.)",pi(LF,0.065,360)+B*0.0085/12,pi(LC,0.07,360)+B*0.005/12,pi(LS,0.06,360)],
+    ["Min. Credit Score",580,620,640],
+    ["Max DTI","50%","43%","45%"]
+  ];
+  const w3=XLSX.utils.aoa_to_sheet(comp);
+  w3["!cols"]=[{wch:32},{wch:16},{wch:16},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,w3,"Loan Comparison");
+
+  // Sheet 4: 24-Month Savings Projection
+  const proj=[["Month","Total Savings","FHA 3.5% Gap","Conventional 20% Gap","Status"]];
+  const n35=B*0.035,n20=B*0.2;
+  let sv=U.dp;
+  for(let i=1;i<=24;i++){
+    sv+=U.msave;
+    proj.push([i,sv,Math.max(0,n35-sv),Math.max(0,n20-sv),sv>=n20?"✓ Conventional Ready":sv>=n35?"✓ FHA Ready":"Saving…"]);
+  }
+  const w4=XLSX.utils.aoa_to_sheet(proj);
+  w4["!cols"]=[{wch:8},{wch:16},{wch:18},{wch:22},{wch:22}];
+  XLSX.utils.book_append_sheet(wb,w4,"24-Month Projection");
+
+  XLSX.writeFile(wb,"FirstKey-Report.xlsx");
+  track("excel_downloaded",{loan:R.loan});
+}
+</script>
 </body>
 </html>
