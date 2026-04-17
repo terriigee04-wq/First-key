@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="First Key Budget Calculator — find out exactly how much home you can afford." />
+  <title>Budget Calculator | First Key</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --brand: #1a6b4a; --brand-lt: #2d9b6e; --accent: #f5a623;
+      --dark: #1c2b2b; --mid: #4a5f5f; --light: #f4f7f4; --white: #ffffff;
+      --radius: 10px; --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; color: var(--dark); background: var(--light); line-height: 1.6; }
+    nav {
+      background: var(--white); border-bottom: 1px solid #e0e8e4;
+      padding: 0 5%; display: flex; align-items: center; justify-content: space-between; height: 64px;
+    }
+    .nav-logo { font-size: 1.4rem; font-weight: 700; color: var(--brand); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .back-link { color: var(--mid); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+    .back-link:hover { color: var(--brand); }
+
+    .page-header {
+      background: linear-gradient(135deg, var(--brand) 0%, #0f4a32 100%);
+      color: white; text-align: center; padding: 60px 5% 50px;
+    }
+    .page-header h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 0.6rem; }
+    .page-header p { opacity: 0.85; max-width: 500px; margin: 0 auto; }
+
+    .calc-wrapper {
+      max-width: 900px; margin: -30px auto 60px; padding: 0 5%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+    }
+    @media (max-width: 660px) { .calc-wrapper { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--white); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 2rem;
+    }
+    .card h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 1.4rem; color: var(--brand); }
+
+    .field { margin-bottom: 1.2rem; }
+    label { display: block; font-size: 0.88rem; font-weight: 600; color: var(--mid); margin-bottom: 0.35rem; }
+    .input-wrap { position: relative; }
+    .input-wrap .prefix {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--mid); font-weight: 600; font-size: 1rem; pointer-events: none;
+    }
+    .input-wrap .suffix {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--mid); font-size: 0.85rem; pointer-events: none;
+    }
+    input[type="number"], select {
+      width: 100%; padding: 0.65rem 1rem; border: 1.5px solid #cdd8d3;
+      border-radius: 7px; font-size: 1rem; color: var(--dark);
+      background: var(--white); transition: border-color 0.2s; appearance: none;
+    }
+    .input-wrap input { padding-left: 28px; }
+    .input-wrap.has-suffix input { padding-right: 40px; }
+    input:focus, select:focus { outline: none; border-color: var(--brand); }
+    input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { opacity: 1; }
+
+    .range-row { display: flex; align-items: center; gap: 0.8rem; }
+    .range-row input[type="range"] {
+      flex: 1; padding: 0; border: none; accent-color: var(--brand);
+    }
+    .range-val {
+      min-width: 52px; text-align: right; font-weight: 700;
+      color: var(--brand); font-size: 0.95rem;
+    }
+
+    .btn-calc {
+      width: 100%; background: var(--brand); color: white;
+      padding: 0.9rem; border: none; border-radius: var(--radius);
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      margin-top: 0.5rem; transition: background 0.2s;
+    }
+    .btn-calc:hover { background: var(--brand-lt); }
+
+    /* Results */
+    .results { display: flex; flex-direction: column; gap: 1rem; }
+    .result-main {
+      background: linear-gradient(135deg, var(--brand), #0f4a32);
+      border-radius: var(--radius); padding: 1.8rem; color: white; text-align: center;
+    }
+    .result-main .label { font-size: 0.85rem; opacity: 0.8; margin-bottom: 0.3rem; }
+    .result-main .big-num { font-size: 2.6rem; font-weight: 800; line-height: 1; }
+    .result-main .sub { font-size: 0.85rem; opacity: 0.75; margin-top: 0.3rem; }
+
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .result-item {
+      background: var(--light); border-radius: 8px; padding: 1rem; text-align: center;
+    }
+    .result-item .r-label { font-size: 0.78rem; color: var(--mid); font-weight: 600; margin-bottom: 0.2rem; }
+    .result-item .r-val { font-size: 1.2rem; font-weight: 800; color: var(--dark); }
+
+    .result-note {
+      background: #fff8e6; border: 1px solid #f5c84a; border-radius: 8px;
+      padding: 1rem; font-size: 0.85rem; color: #7a5a00;
+    }
+    .result-note strong { display: block; margin-bottom: 0.2rem; }
+
+    .breakdown { margin-top: 0.5rem; }
+    .breakdown h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.8rem; }
+    .bar-row { margin-bottom: 0.6rem; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--mid); margin-bottom: 0.2rem; }
+    .bar-track { background: #e0ebe4; border-radius: 4px; height: 8px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+    footer { background: #1c2b2b; color: rgba(255,255,255,0.5); text-align: center; padding: 2rem 5%; font-size: 0.85rem; }
+    footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+    footer a:hover { color: white; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">First<span>Key</span></a>
+  <a href="index.html" class="back-link">← Back to Home</a>
+</nav>
+
+<div class="page-header">
+  <h1>💰 Budget Calculator</h1>
+  <p>Find out exactly how much home you can afford — including taxes, insurance, and HOA fees.</p>
+</div>
+
+<div class="calc-wrapper">
+
+  <!-- INPUTS -->
+  <div class="card">
+    <h2>Your Financial Picture</h2>
+
+    <div class="field">
+      <label for="income">Annual Household Income</label>
+      <div class="input-wrap"><span class="prefix">$</span>
+        <input type="number" id="income" value="75000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="monthly-debts">Monthly Debt Payments <small style="font-weight:400">(car, student loans, etc.)</small></label>
+      <div class="input-wrap"><span class="prefix">$</span>
+        <input type="number" id="monthly-debts" value="300" min="0" step="50" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="down-payment">Down Payment</label>
+      <div class="input-wrap"><span class="prefix">$</span>
+        <input type="number" id="down-payment" value="20000" min="0" step="1000" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Interest Rate: <span id="rate-label">7.0%</span></label>
+      <div class="range-row">
+        <input type="range" id="rate" min="3" max="12" step="0.1" value="7.0"
+          oninput="document.getElementById('rate-label').textContent = parseFloat(this.value).toFixed(1) + '%'" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="loan-term">Loan Term</label>
+      <select id="loan-term">
+        <option value="30">30-year fixed</option>
+        <option value="20">20-year fixed</option>
+        <option value="15">15-year fixed</option>
+        <option value="10">10-year fixed</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Property Tax Rate: <span id="tax-label">1.2%</span></label>
+      <div class="range-row">
+        <input type="range" id="tax-rate" min="0.5" max="3" step="0.1" value="1.2"
+          oninput="document.getElementById('tax-label').textContent = parseFloat(this.value).toFixed(1) + '%'" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="hoa">Monthly HOA Fee (if any)</label>
+      <div class="input-wrap"><span class="prefix">$</span>
+        <input type="number" id="hoa" value="0" min="0" step="25" />
+      </div>
+    </div>
+
+    <button class="btn-calc" onclick="calculate()">Calculate Affordability</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="result-main">
+      <div class="label">Maximum Home Price</div>
+      <div class="big-num" id="res-price">$—</div>
+      <div class="sub">based on 28% front-end DTI guideline</div>
+    </div>
+
+    <div class="result-grid">
+      <div class="result-item">
+        <div class="r-label">Est. Monthly Payment</div>
+        <div class="r-val" id="res-monthly">—</div>
+      </div>
+      <div class="result-item">
+        <div class="r-label">Principal &amp; Interest</div>
+        <div class="r-val" id="res-pi">—</div>
+      </div>
+      <div class="result-item">
+        <div class="r-label">Property Tax / mo</div>
+        <div class="r-val" id="res-tax">—</div>
+      </div>
+      <div class="result-item">
+        <div class="r-label">Insurance / mo</div>
+        <div class="r-val" id="res-ins">—</div>
+      </div>
+    </div>
+
+    <div class="breakdown card" style="padding:1.2rem;">
+      <h3>Monthly Payment Breakdown</h3>
+      <div class="bar-row">
+        <div class="bar-label"><span>Principal &amp; Interest</span><span id="bar-pi-pct">—</span></div>
+        <div class="bar-track"><div class="bar-fill" id="bar-pi" style="width:0%;background:#1a6b4a"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>Property Tax</span><span id="bar-tax-pct">—</span></div>
+        <div class="bar-track"><div class="bar-fill" id="bar-tax" style="width:0%;background:#f5a623"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>Insurance</span><span id="bar-ins-pct">—</span></div>
+        <div class="bar-track"><div class="bar-fill" id="bar-ins" style="width:0%;background:#2d9b6e"></div></div>
+      </div>
+      <div class="bar-row" id="bar-hoa-row" style="display:none">
+        <div class="bar-label"><span>HOA</span><span id="bar-hoa-pct">—</span></div>
+        <div class="bar-track"><div class="bar-fill" id="bar-hoa" style="width:0%;background:#8bc4a8"></div></div>
+      </div>
+    </div>
+
+    <div class="result-note">
+      <strong>💡 Lender's Rule of Thumb</strong>
+      Most lenders cap your total housing payment at 28% of gross monthly income and total debt at 36–43%. This is an estimate — speak with a lender for your actual pre-approval amount.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>&copy; 2026 <a href="index.html">First Key</a>. Estimates are for educational purposes only and do not constitute financial advice.</p>
+</footer>
+
+<script>
+  function fmt(n) {
+    return '$' + Math.round(n).toLocaleString();
+  }
+  function pct(part, total) {
+    return total > 0 ? Math.round((part / total) * 100) + '%' : '0%';
+  }
+
+  function calculate() {
+    const income       = parseFloat(document.getElementById('income').value) || 0;
+    const monthlyDebts = parseFloat(document.getElementById('monthly-debts').value) || 0;
+    const downPayment  = parseFloat(document.getElementById('down-payment').value) || 0;
+    const annualRate   = parseFloat(document.getElementById('rate').value) / 100;
+    const termYears    = parseInt(document.getElementById('loan-term').value);
+    const taxRate      = parseFloat(document.getElementById('tax-rate').value) / 100;
+    const hoa          = parseFloat(document.getElementById('hoa').value) || 0;
+
+    const monthlyIncome = income / 12;
+    const maxPITI = monthlyIncome * 0.28;        // 28% front-end limit
+    const maxTotal = monthlyIncome * 0.43 - monthlyDebts; // 43% back-end limit
+    const maxAllowed = Math.min(maxPITI, maxTotal);
+
+    const monthlyRate = annualRate / 12;
+    const n = termYears * 12;
+
+    // Iteratively find home price where total monthly payment ≤ maxAllowed
+    // monthly = PI + tax/12 + insurance/12 + hoa
+    // insurance ~ 0.5% of home price / 12
+    // tax = taxRate * homePrice / 12
+    // PI = loanAmt * monthlyRate / (1 - (1+r)^-n)
+
+    function totalPayment(homePrice) {
+      const loan = homePrice - downPayment;
+      if (loan <= 0) return 0;
+      let pi;
+      if (monthlyRate === 0) {
+        pi = loan / n;
+      } else {
+        pi = loan * monthlyRate / (1 - Math.pow(1 + monthlyRate, -n));
+      }
+      const tax = (taxRate * homePrice) / 12;
+      const ins = (0.005 * homePrice) / 12;
+      return pi + tax + ins + hoa;
+    }
+
+    // Binary search for max affordable home price
+    let lo = 0, hi = 5000000, homePrice = 0;
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
+      if (totalPayment(mid) <= maxAllowed) {
+        homePrice = mid;
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+    }
+
+    if (homePrice < downPayment) homePrice = downPayment;
+
+    const loan = homePrice - downPayment;
+    let pi;
+    if (monthlyRate === 0) {
+      pi = loan / n;
+    } else {
+      pi = loan * monthlyRate / (1 - Math.pow(1 + monthlyRate, -n));
+    }
+    const tax = (taxRate * homePrice) / 12;
+    const ins = (0.005 * homePrice) / 12;
+    const total = pi + tax + ins + hoa;
+
+    document.getElementById('res-price').textContent   = fmt(homePrice);
+    document.getElementById('res-monthly').textContent = fmt(total);
+    document.getElementById('res-pi').textContent      = fmt(pi);
+    document.getElementById('res-tax').textContent     = fmt(tax);
+    document.getElementById('res-ins').textContent     = fmt(ins);
+
+    document.getElementById('bar-pi').style.width  = pct(pi, total);
+    document.getElementById('bar-tax').style.width = pct(tax, total);
+    document.getElementById('bar-ins').style.width = pct(ins, total);
+    document.getElementById('bar-pi-pct').textContent  = pct(pi, total);
+    document.getElementById('bar-tax-pct').textContent = pct(tax, total);
+    document.getElementById('bar-ins-pct').textContent = pct(ins, total);
+
+    const hoaRow = document.getElementById('bar-hoa-row');
+    if (hoa > 0) {
+      hoaRow.style.display = 'block';
+      document.getElementById('bar-hoa').style.width   = pct(hoa, total);
+      document.getElementById('bar-hoa-pct').textContent = pct(hoa, total);
+    } else {
+      hoaRow.style.display = 'none';
+    }
+  }
+
+  // Run on load with defaults
+  calculate();
+</script>
+</body>
+</html>
