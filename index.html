@@ -742,6 +742,35 @@ function updatePreview() {
  if (selectedCity) showBudgetTiers(selectedCity);
 }
 
+function setCoSigner(hasSigner, btn) {
+ hasCoSigner = hasSigner;
+ document.querySelectorAll('.freq-toggle').forEach(toggle => {
+ toggle.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
+ });
+ btn.classList.add('active');
+ document.getElementById('coSignerFields').classList.toggle('hidden', !hasSigner);
+ if (hasSigner) updateCombinedIncome();
+}
+
+function updateCombinedIncome() {
+ const coIncome = parseNum('coSignerIncome');
+ if (hasCoSigner && coIncome > 0) {
+ const mo = getMonthlyIncome();
+ const combined = mo + coIncome;
+ document.getElementById('incomePreview').textContent = '+ Co-signer: ' + fmt(coIncome) + '/mo = ' + fmt(combined) + ' combined';
+ }
+}
+
+function updateCoSignerCredit() {
+ const v = +document.getElementById('coSignerCreditSlider').value;
+ document.getElementById('coSignerCreditNum').textContent = v;
+ const cL = document.getElementById('coSignerCreditLbl');
+ if (v < 580) { cL.textContent = 'Poor Credit'; cL.className = 'credit-lbl poor'; }
+ else if (v < 670) { cL.textContent = 'Fair Credit'; cL.className = 'credit-lbl fair'; }
+ else if (v < 740) { cL.textContent = 'Good Credit'; cL.className = 'credit-lbl good'; }
+ else { cL.textContent = 'Excellent Credit'; cL.className = 'credit-lbl great'; }
+}
+
 function showEmpNote() {
  const val = document.getElementById('employment').value;
  const note = document.getElementById('empNote');
