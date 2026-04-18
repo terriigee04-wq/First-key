@@ -349,6 +349,31 @@ input[type="range"]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;b
  <div class="field-hint">Not sure? Pull your free report at annualcreditreport.com — it doesn't hurt your score.</div>
  </div>
 
+ <div class="field">
+ <div class="label-row"><label>Will you have a co-signer?</label><span class="label-unit">spouse, parent, sibling</span></div>
+ <div class="freq-toggle">
+ <button class="freq-btn active" onclick="setCoSigner(false,this)">Just me</button>
+ <button class="freq-btn" onclick="setCoSigner(true,this)">Yes, I have a co-signer</button>
+ </div>
+ </div>
+
+ <div id="coSignerFields" class="hidden">
+ <div class="field">
+ <div class="label-row"><label>Co-signer's income</label><span class="label-unit">monthly</span></div>
+ <input class="clean-input" type="number" id="coSignerIncome" placeholder="7500" oninput="updateCombinedIncome()">
+ <div class="field-hint">Before taxes</div>
+ </div>
+ <div class="field">
+ <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:6px">Co-signer's credit score</label>
+ <div class="credit-display">
+ <div class="credit-num" id="coSignerCreditNum">650</div>
+ <div class="credit-lbl fair" id="coSignerCreditLbl">Fair Credit</div>
+ </div>
+ <input type="range" id="coSignerCreditSlider" min="300" max="850" value="650" oninput="updateCoSignerCredit()">
+ <div class="range-labels"><span>300 Poor</span><span>580 Fair</span><span>670 Good</span><span>850 Excellent</span></div>
+ </div>
+ </div>
+
  <div class="two-col">
  <div class="field">
  <div class="label-row"><label>Down payment saved</label><span class="label-unit">total</span></div>
@@ -1075,7 +1100,8 @@ function showResults() {
 }
 
 function handlePayment() {
- alert('Stripe is not yet connected.\n\nTo go live:\n1. Sign up free at stripe.com\n2. Create a $7 product\n3. Deploy a Vercel serverless function\n4. Replace this function with Stripe checkout\n\nUse the demo button below to preview the report now.');
+ plausible('AI Report - Payment Clicked');
+ alert('Thanks for your interest!\n\nStripe integration is finalizing this week.\n\nClick the demo button below to see what your AI report will look like.');
 }
 
 async function runDemoReport() {
