@@ -701,6 +701,7 @@ let priceMode = 'know';
 let selectedCity = null;
 let selectedTierPrice = null;
 let rerunUsed = false;
+let hasCoSigner = false;
 let G = {};
 
 function setFreq(f, btn) {
@@ -1204,6 +1205,60 @@ function downloadPDF() {
  doc.text(l, margin, y);
  y += 13;
  });
+ y += 10;
+
+ if (y > 700) { doc.addPage(); y = margin; }
+ doc.setFontSize(10);
+ doc.setFont('helvetica', 'bold');
+ doc.setTextColor(26, 58, 42);
+ doc.text('LOAN PROGRAM ELIGIBILITY', margin, y);
+ y += 13;
+ doc.setFontSize(9);
+ doc.setFont('helvetica', 'normal');
+ doc.setTextColor(74, 90, 74);
+ const programs = [];
+ if (G.veteran) programs.push('✓ VA Loan — $0 down, no PMI');
+ if (G.anyProgram && G.canAffordFHA) programs.push('✓ FHA Loan — ' + (G.fhaDownPct*100).toFixed(1) + '% down');
+ if (G.anyProgram && !G.canAffordFHA) programs.push('○ FHA Loan — Close to qualifying');
+ programs.push('○ Conventional — 5% minimum down');
+ programs.forEach(p => {
+ doc.text(p, margin + 10, y);
+ y += 11;
+ });
+ y += 6;
+
+ if (y > 700) { doc.addPage(); y = margin; }
+ doc.setFontSize(10);
+ doc.setFont('helvetica', 'bold');
+ doc.setTextColor(26, 58, 42);
+ doc.text('ACTION STEPS', margin, y);
+ y += 13;
+ doc.setFontSize(9);
+ doc.setFont('helvetica', 'normal');
+ doc.setTextColor(74, 90, 74);
+ const steps = [];
+ if (G.creditGap > 0) steps.push('1. Raise credit score ' + G.creditGap + ' points');
+ if (G.downGap > 0) steps.push('2. Save ' + fmt(G.downGap) + ' more for down payment');
+ if (G.backEndDTI > 43) steps.push('3. Bring debt-to-income ratio under 43%');
+ steps.push((steps.length + 1) + '. Get pre-approved with 2-3 lenders');
+ steps.push((steps.length + 1) + '. Talk to HUD-approved counselor (free)');
+ steps.forEach(s => {
+ doc.text(s, margin + 10, y);
+ y += 11;
+ });
+ y += 6;
+
+ if (y > 700) { doc.addPage(); y = margin; }
+ doc.setFontSize(10);
+ doc.setFont('helvetica', 'bold');
+ doc.setTextColor(26, 58, 42);
+ doc.text('IMPORTANT DISCLAIMER', margin, y);
+ y += 13;
+ doc.setFontSize(8);
+ doc.setFont('helvetica', 'normal');
+ doc.setTextColor(74, 90, 74);
+ const disclaimer = 'These figures are estimates based on information you provided and national averages. Actual loan terms, rates, and eligibility vary by lender and your complete financial picture. Always verify with a licensed mortgage professional or HUD-approved counselor. This tool is for education only and is not financial advice.';
+ doc.text(disclaimer, margin, y, { maxWidth: contentW, align: 'left' });
 
  const pageCount = doc.internal.getNumberOfPages();
  for (let i = 1; i <= pageCount; i++) {
