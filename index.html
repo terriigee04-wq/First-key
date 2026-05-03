@@ -7,6 +7,7 @@
 <meta name="description" content="Find out how much home you can afford in 2 minutes.">
 <script async src="https://plausible.io/js/pa-D-wh3tenPxb7FHnAH2yrA.js"></script>
 <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)};plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init();</script>
+<script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -99,6 +100,16 @@ select{width:100%;padding:.7rem 1rem;border:1.5px solid #cdd8d3;border-radius:8p
 .atext{font-size:.88rem;color:var(--mid)}
 .btn-xls{width:100%;background:#217346;color:#fff;border:0;padding:.9rem;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;margin-top:1.5rem}
 .btn-xls:hover{background:#1a5c38}
+#payment-form{border-top:1px solid #e0ebe4;padding-top:1.2rem;margin-top:1.2rem}
+#payment-errors{color:#c0392b;font-size:.85rem;margin-top:.5rem;min-height:1.2em}
+.btn-pay{width:100%;background:var(--brand);color:#fff;border:0;padding:.9rem;border-radius:var(--radius);font-size:1rem;font-weight:700;cursor:pointer;margin-top:1rem}
+.btn-pay:hover{background:var(--brand-lt)}
+.btn-pay:disabled,.btn-unlock:disabled{opacity:.6;cursor:not-allowed}
+.report-para{margin-bottom:1.4rem;padding-bottom:1.4rem;border-bottom:1px solid #e8f0ec}
+.report-para:last-child{border:0;margin:0;padding:0}
+.report-heading{font-size:.95rem;font-weight:700;margin-bottom:.4rem;color:var(--brand)}
+.report-text{font-size:.88rem;color:var(--mid);line-height:1.7}
+.loading-msg{color:var(--mid);text-align:center;padding:2rem;font-size:.95rem}
 footer{background:#1c2b2b;color:rgba(255,255,255,.5);text-align:center;padding:2.5rem 5%;font-size:.85rem}
 footer .flogo{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:.5rem}
 footer .flogo span{color:var(--accent)}
@@ -250,8 +261,13 @@ footer p{max-width:480px;margin:0 auto 1rem}
         <div class="blur">Based on your income and DTI ratio, you're a strong candidate for a conventional loan. Your biggest opportunity is increasing your down payment from 4.4% to 20%, saving ~$187/month in PMI and unlocking the best rates available...</div>
         <div class="plock">🔒 LOCKED</div>
       </div>
-      <button class="btn-unlock" onclick="openPayment()">🔓 Unlock Full Report — $8.99</button>
+      <button class="btn-unlock" id="btn-unlock" onclick="handlePayment()">🔓 Unlock Full Report — $7.00</button>
       <p class="snote">🔒 Secure payment via Stripe · One-time purchase · Instant access</p>
+      <div id="payment-form" style="display:none">
+        <div id="stripe-payment-element"></div>
+        <div id="payment-errors"></div>
+        <button class="btn-pay" id="btn-pay" onclick="confirmPayment()">Pay $7.00</button>
+      </div>
     </div>
   </div>
 
@@ -270,12 +286,12 @@ footer p{max-width:480px;margin:0 auto 1rem}
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
-// Create a Stripe Payment Link at dashboard.stripe.com/payment-links for $8.99.
-// Set its "After payment" redirect URL to:
-//   https://yourfirstkey.netlify.app/?unlocked=true
-// Then paste the buy.stripe.com URL below:
-const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/REPLACE_WITH_YOUR_LINK';
+// Paste your Stripe PUBLISHABLE key here (safe for frontend — not the secret key).
+// Find it at dashboard.stripe.com/apikeys
+const STRIPE_PK = 'pk_live_REPLACE_WITH_YOUR_PUBLISHABLE_KEY';
 // ────────────────────────────────────────────────────────────────────────────
+
+let _stripe, _elements;
 
 const STATES=[
 ["AL","Alabama","Alabama HFA Step Up Program"],["AK","Alaska","AHFC First Home Limited"],
@@ -315,7 +331,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   const sel=$("state");
   STATES.forEach(s=>{const o=document.createElement("option");o.value=s[0];o.textContent=s[1];sel.appendChild(o)});
   const params=new URLSearchParams(location.search);
-  if(params.get("unlocked")==="true")handleReturn();
+  if(params.get("payment_success")==="true"||params.get("redirect_status")==="succeeded")handlePaymentReturn();
 });
 
 function startCalc(){$("hero-sec").style.display="none";$("calc-sec").style.display="block";track("calculator_started")}
@@ -411,14 +427,66 @@ async function submitEmail(e){
   track("email_captured",{state:U.state,loan:R.loan});
 }
 
-function openPayment(){
-  localStorage.setItem("fk_data",JSON.stringify({U,R,ts:Date.now()}));
+async function handlePayment(){
+  const btn=$("btn-unlock");
+  btn.disabled=true;
+  btn.textContent="Loading…";
   track("premium_unlock_clicked",{loan:R.loan});
-  const pm=U.email?`?prefilled_email=${encodeURIComponent(U.email)}`:"";
-  location.href=STRIPE_PAYMENT_LINK+pm;
+  try{
+    const res=await fetch("/.netlify/functions/create-payment-intent",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({email:U.email||undefined})
+    });
+    const {clientSecret,error}=await res.json();
+    if(error)throw new Error(error);
+    _stripe=Stripe(STRIPE_PK);
+    _elements=_stripe.elements({clientSecret,appearance:{theme:"stripe",variables:{colorPrimary:"#1a6b4a"}}});
+    const pe=_elements.create("payment");
+    pe.mount("#stripe-payment-element");
+    $("payment-form").style.display="block";
+    btn.textContent="🔓 Unlock Full Report — $7.00";
+    btn.disabled=false;
+    btn.onclick=null; // prevent double-click re-init
+  }catch(err){
+    $("payment-errors").textContent="Could not load payment form: "+err.message;
+    btn.textContent="🔓 Unlock Full Report — $7.00";
+    btn.disabled=false;
+  }
 }
 
-function handleReturn(){
+async function confirmPayment(){
+  const btn=$("btn-pay");
+  btn.disabled=true;
+  btn.textContent="Processing…";
+  $("payment-errors").textContent="";
+  // Save user data in case a 3DS redirect is needed
+  localStorage.setItem("fk_data",JSON.stringify({U,R,ts:Date.now()}));
+  try{
+    const{error,paymentIntent}=await _stripe.confirmPayment({
+      elements:_elements,
+      confirmParams:{return_url:location.origin+"/?payment_success=true"},
+      redirect:"if_required"
+    });
+    if(error){
+      $("payment-errors").textContent=error.message;
+      btn.disabled=false;
+      btn.textContent="Pay $7.00";
+      localStorage.removeItem("fk_data");
+    }else if(paymentIntent&&paymentIntent.status==="succeeded"){
+      localStorage.removeItem("fk_data");
+      unlockPremium();
+      track("payment_complete");
+    }
+  }catch(err){
+    $("payment-errors").textContent="Payment failed: "+err.message;
+    btn.disabled=false;
+    btn.textContent="Pay $7.00";
+  }
+}
+
+function handlePaymentReturn(){
+  // Called on page load when returning from a 3DS redirect
   const saved=localStorage.getItem("fk_data");
   history.replaceState({},"","/");
   if(saved){
@@ -440,10 +508,36 @@ function handleReturn(){
   localStorage.removeItem("fk_data");
 }
 
-function unlockPremium(){
+async function unlockPremium(){
   $("prem").style.display="none";
   $("ai-sec").style.display="block";
-  renderAdvice();
+  $("advice").innerHTML='<div class="loading-msg">⏳ Generating your personalized report…</div>';
+  const s=stateObj();
+  try{
+    const res=await fetch("/.netlify/functions/generate-report",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        income:U.income,state:s[1],homePriceTarget:R.budget,
+        downPayment:U.dp,dpPct:R.dpPct,monthlyDebts:U.mdebt,
+        monthlyCapacity:R.monthly,dti:R.dti,loanProgram:R.loan,
+        monthsToReady:R.months,stateProgram:s[2]
+      })
+    });
+    const{report,error}=await res.json();
+    if(error)throw new Error(error);
+    // Parse the 4 bold-headed paragraphs Claude returns
+    const blocks=report.split(/\n\n+/);
+    $("advice").innerHTML=blocks.map(block=>{
+      const m=block.match(/^\*\*(.+?)\*\*\n?([\s\S]*)/);
+      if(m)return`<div class="report-para"><div class="report-heading">${m[1]}</div><div class="report-text">${m[2].trim()}</div></div>`;
+      return block.trim()?`<div class="report-para"><div class="report-text">${block.trim()}</div></div>`:"";
+    }).join("");
+  }catch(_){
+    // Fallback to rule-based advice if API fails
+    renderAdvice();
+  }
+  track("ai_advice_viewed",{loan:R.loan});
 }
 
 function renderAdvice(){
