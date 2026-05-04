@@ -267,6 +267,7 @@ footer p{max-width:480px;margin:0 auto 1rem}
         <div id="stripe-payment-element"></div>
         <div id="payment-errors"></div>
         <button class="btn-pay" id="btn-pay" onclick="confirmPayment()">Pay $7.00</button>
+        <button onclick="cancelPayment()" style="background:none;border:none;color:var(--mid);font-size:.82rem;cursor:pointer;margin-top:.6rem;width:100%">Cancel</button>
       </div>
     </div>
   </div>
@@ -292,6 +293,7 @@ const STRIPE_PK = 'pk_live_REPLACE_WITH_YOUR_PUBLISHABLE_KEY';
 // ────────────────────────────────────────────────────────────────────────────
 
 let _stripe, _elements;
+let paymentCompleted = false;
 
 const STATES=[
 ["AL","Alabama","Alabama HFA Step Up Program"],["AK","Alaska","AHFC First Home Limited"],
@@ -475,7 +477,8 @@ async function confirmPayment(){
       localStorage.removeItem("fk_data");
     }else if(paymentIntent&&paymentIntent.status==="succeeded"){
       localStorage.removeItem("fk_data");
-      unlockPremium();
+      paymentCompleted=true;
+      generateAIReport();
       track("payment_complete");
     }
   }catch(err){
@@ -499,13 +502,28 @@ function handlePaymentReturn(){
         calculate();render();
         $("hero-sec").style.display="none";$("calc-sec").style.display="none";$("res-sec").style.display="block";
         $("p1").classList.add("done");$("p2").classList.add("done");$("p3").classList.add("active");
-        unlockPremium();
+        paymentCompleted=true;
+        generateAIReport();
         track("payment_complete");
         return;
       }
     }catch(_){}
   }
   localStorage.removeItem("fk_data");
+}
+
+function cancelPayment(){
+  $("payment-form").style.display="none";
+  const btn=$("btn-unlock");
+  btn.disabled=false;
+  btn.textContent="🔓 Unlock Full Report — $7.00";
+  btn.onclick=handlePayment;
+  $("payment-errors").textContent="";
+}
+
+function generateAIReport(){
+  if(!paymentCompleted)return; // guard: never runs without a completed payment
+  unlockPremium();
 }
 
 async function unlockPremium(){
