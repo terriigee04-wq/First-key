@@ -8,6 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
 <script defer data-domain="yourfirstkey.netlify.app" src="https://plausible.io/js/script.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <style>
 :root{
  --cream:#faf7f2;--warm:#fff9f2;--forest:#1a3a2a;--sage:#4a7c5f;
@@ -516,11 +517,17 @@ input[type="range"]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;b
  <div class="price-tag"><sup>$</sup>7</div>
  <div class="price-desc">One-time · Instant<br>No subscription<br>No auto-renewal ever</div>
  </div>
- <button class="btn-pay" onclick="handlePayment()"><span>🔑</span> Get My Personal Report — $7</button>
+ <div id="payment-section">
+ <button class="btn-pay" id="pay-btn" onclick="startPayment()"><span>🔑</span> Get My Personal Report — $7</button>
  <div class="stripe-note">🔒 Stripe · Visa, Mastercard, Apple Pay, Google Pay</div>
  <div class="pw-no-tricks">No tricks. No recurring charges. No email list. Just a report.</div>
- <div class="demo-note"><strong>Demo mode:</strong> Stripe not yet connected — preview the AI report free below.</div>
- <button class="btn-demo" onclick="runDemoReport()">Preview AI Report (free demo) →</button>
+ </div>
+ <div id="stripe-form-container" style="display:none;margin-top:18px;">
+ <div id="payment-element" style="margin-bottom:14px;"></div>
+ <button class="btn-pay" id="submit-payment-btn" onclick="confirmPayment()">Pay $7 and Get My Report</button>
+ <p id="payment-message" style="color:#c0392b;font-size:13px;margin-top:8px;text-align:center;min-height:18px;"></p>
+ <button onclick="cancelPayment()" style="background:none;border:none;color:#888;font-size:12px;cursor:pointer;margin-top:8px;width:100%;">Cancel</button>
+ </div>
  </div>
  </div>
 
@@ -1129,10 +1136,81 @@ function showResults() {
  window.scrollTo(0, 0);
 }
 
-function handlePayment() {
+// ── Stripe Payment Integration ────────────────────────────────────────
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_51TLy6TLgOnZFjdmM9WbFCucYYz1o6njKM5c1NDpiV2s3hnePOzLb7V3xngSZsCoSk6wr607aD7pSQy99849DDuWH00cK8Q9SsU';
+let stripe, elements, paymentElement;
+let paymentCompleted = false;
+
+async function startPayment() {
  plausible('AI Report - Payment Clicked');
- alert('Thanks for your interest!\n\nStripe integration is finalizing this week.\n\nClick the demo button below to see what your AI report will look like.');
+ const payBtn = document.getElementById('pay-btn');
+ const msg = document.getElementById('payment-message');
+ payBtn.disabled = true;
+ const originalText = payBtn.innerHTML;
+ payBtn.innerHTML = 'Loading payment form...';
+ msg.textContent = '';
+
+ try {
+ const response = await fetch('/.netlify/functions/create-payment-intent', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({})
+ });
+ if (!response.ok) throw new Error('Could not initialize payment. Please try again.');
+
+ const { clientSecret, error } = await response.json();
+ if (error) throw new Error(error);
+
+ stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+ elements = stripe.elements({ clientSecret, appearance: { theme: 'stripe' } });
+ paymentElement = elements.create('payment');
+ paymentElement.mount('#payment-element');
+
+ document.getElementById('payment-section').style.display = 'none';
+ document.getElementById('stripe-form-container').style.display = 'block';
+ } catch (err) {
+ payBtn.disabled = false;
+ payBtn.innerHTML = originalText;
+ msg.textContent = err.message || 'Payment failed to start. Try again.';
+ }
 }
+
+async function confirmPayment() {
+ const submitBtn = document.getElementById('submit-payment-btn');
+ const msg = document.getElementById('payment-message');
+ submitBtn.disabled = true;
+ submitBtn.textContent = 'Processing...';
+ msg.textContent = '';
+
+ const { error, paymentIntent } = await stripe.confirmPayment({
+ elements,
+ redirect: 'if_required'
+ });
+
+ if (error) {
+ msg.textContent = error.message;
+ submitBtn.disabled = false;
+ submitBtn.textContent = 'Pay $7 and Get My Report';
+ return;
+ }
+
+ if (paymentIntent && paymentIntent.status === 'succeeded') {
+ paymentCompleted = true;
+ plausible('AI Report - Payment Succeeded');
+ document.getElementById('stripe-form-container').style.display = 'none';
+ runDemoReport();
+ }
+}
+
+function cancelPayment() {
+ document.getElementById('stripe-form-container').style.display = 'none';
+ document.getElementById('payment-section').style.display = 'block';
+ const payBtn = document.getElementById('pay-btn');
+ payBtn.disabled = false;
+ payBtn.innerHTML = '<span>🔑</span> Get My Personal Report — $7';
+ document.getElementById('payment-message').textContent = '';
+}
+// ──────────────────────────────────────────────────────────────────────
 
 async function runDemoReport() {
  document.getElementById('paywallSection').classList.add('hidden');
