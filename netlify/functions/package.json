@@ -1,9 +1,0 @@
-{
-  "name": "firstkey-functions",
-  "version": "1.0.0",
-  "description": "Netlify serverless functions for FirstKey",
-  "private": true,
-  "dependencies": {
-    "stripe": "^17.5.0"
-  }
-}
