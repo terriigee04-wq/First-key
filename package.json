@@ -4,6 +4,7 @@
   "description": "FirstKey — first-time homebuyer readiness tool",
   "private": true,
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
     "stripe": "^17.5.0"
   }
 }

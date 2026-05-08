@@ -1220,29 +1220,52 @@ async function runDemoReport() {
  document.getElementById('reportActions').style.display = 'none';
  document.getElementById('reportText').textContent = '';
  window.scrollTo(0, rc.offsetTop - 20);
- await new Promise(r => setTimeout(r, 2000));
- document.getElementById('reportLoading').classList.add('hidden');
 
- const { credit, monthly, downpay, homePrice, fhaTotal, fhaDownAmt, maxBudget, state, backEndDTI, creditGap, downGap, downGapMos, canAffordFHA, anyProgram, employment } = G;
- let p1, p2, p3, p4;
- if (canAffordFHA && anyProgram) {
- p1 = 'Based on everything you\'ve shared, you\'re in a genuinely strong position to buy a home. With a ' + credit + ' credit score and ' + fmt(downpay) + ' saved, you clear the FHA requirements and your estimated all-in monthly payment of ' + fmt(fhaTotal) + ' fits within your income. That\'s not encouragement — that\'s just math.';
- p2 = 'Your most important next step is getting pre-approved, and the reason it matters so much is that it transforms you from someone looking at homes into a buyer. Sellers take pre-approved buyers seriously, and in a competitive market that difference often determines who gets the house.';
- p3 = 'What most buyers in ' + state + ' don\'t realize is that your state has down payment assistance programs that could reduce what you bring to closing — some are outright grants you never repay. A free HUD-approved housing counselor can tell you exactly which ones you qualify for.';
- p4 = 'This week, go to hud.gov/housingcounseling and schedule a free 30-minute call with a HUD counselor in ' + state + '. They\'ll review your situation, identify local programs, and point you toward the most buyer-friendly lenders in your market. That one conversation is probably the highest-value thing you can do right now.';
- } else if (anyProgram) {
- p1 = 'You\'re closer than the numbers might feel. Your ' + credit + ' credit score puts you within reach of FHA programs, and with ' + fmt(downpay) + ' saved you\'re actively building. The main gap right now is that the monthly cost on this home pushes your debt-to-income ratio above FHA\'s limit — but that\'s a solvable problem, not a permanent wall.';
- p2 = (downGap > 0 ? 'Your most important move is closing the ' + fmt(downGap) + ' down payment gap' : 'Your most important move is bringing your monthly debts down') + '. The reason this is the priority is that it directly changes your DTI — the number lenders care about most. Even a modest improvement shifts you from "almost" to "approved."';
- p3 = 'What most first-time buyers in ' + state + ' don\'t know is that down payment assistance programs can cover part — sometimes all — of the down payment, and many are grants that never need to be repaid. They exist specifically for buyers in your situation. Most people miss them because their lender doesn\'t bring them up.';
- p4 = 'This week, search "' + state + ' first time home buyer down payment assistance" and look at .gov and .org results. Identify 2–3 programs and check your eligibility. This one hour of research could change your timeline by months.';
- } else {
- p1 = 'Right now the numbers need some work before a lender will say yes — but the gap is specific and measurable, which means it\'s fixable. ' + (creditGap > 0 ? 'Your credit score needs to reach 580 to unlock FHA — you\'re ' + creditGap + ' points away.' : 'Your credit is in a workable range.') + ' The path forward is clear, even if it takes some time.';
- p2 = 'The single most important thing to focus on is your credit score, because it\'s the fastest lever available and it opens everything else. Paying credit card balances below 30% of your limit can add 20–50 points within 60 days. Don\'t open new accounts right now — it temporarily drops your score when you need it moving up.';
- p3 = 'Here\'s what most people in your situation don\'t know: HUD-approved housing counselors offer free sessions specifically for buyers who aren\'t ready yet. They look at your actual credit report, identify exactly what\'s dragging your score, and give you a personalized sequence. It\'s professional financial coaching at zero cost.';
- p4 = 'This week, go to annualcreditreport.com and pull your free credit report. For each credit card, calculate 30% of the limit — that\'s your target balance. If any card is above that, put your next extra payment there. You can start today, and it begins moving your number immediately.';
+ const { credit, monthly, downpay, homePrice, fhaTotal, fhaDownAmt, maxBudget, state, backEndDTI, creditGap, downGap, downGapMos, canAffordFHA, anyProgram, employment, debtsRaw } = G;
+
+ let reportText = '';
+ try {
+  const res = await fetch('/.netlify/functions/generate-report', {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify({
+    credit, monthly, downpay, homePrice, state,
+    debts: debtsRaw || 0, veteran: G.veteran || false,
+    employment: employment || 'W-2',
+    creditGap, downGap, downGapMos,
+    canAffordFHA, anyProgram,
+    backEndDTI, fhaTotal
+   })
+  });
+  if (res.ok) {
+   const data = await res.json();
+   if (data.report) reportText = data.report;
+  }
+ } catch (_) {}
+
+ if (!reportText) {
+  let p1, p2, p3, p4;
+  if (canAffordFHA && anyProgram) {
+   p1 = 'Based on everything you\'ve shared, you\'re in a genuinely strong position to buy a home. With a ' + credit + ' credit score and ' + fmt(downpay) + ' saved, you clear the FHA requirements and your estimated all-in monthly payment of ' + fmt(fhaTotal) + ' fits within your income. That\'s not encouragement — that\'s just math.';
+   p2 = 'Your most important next step is getting pre-approved, and the reason it matters so much is that it transforms you from someone looking at homes into a buyer. Sellers take pre-approved buyers seriously, and in a competitive market that difference often determines who gets the house.';
+   p3 = 'What most buyers in ' + state + ' don\'t realize is that your state has down payment assistance programs that could reduce what you bring to closing — some are outright grants you never repay. A free HUD-approved housing counselor can tell you exactly which ones you qualify for.';
+   p4 = 'This week, go to hud.gov/housingcounseling and schedule a free 30-minute call with a HUD counselor in ' + state + '. They\'ll review your situation, identify local programs, and point you toward the most buyer-friendly lenders in your market. That one conversation is probably the highest-value thing you can do right now.';
+  } else if (anyProgram) {
+   p1 = 'You\'re closer than the numbers might feel. Your ' + credit + ' credit score puts you within reach of FHA programs, and with ' + fmt(downpay) + ' saved you\'re actively building. The main gap right now is that the monthly cost on this home pushes your debt-to-income ratio above FHA\'s limit — but that\'s a solvable problem, not a permanent wall.';
+   p2 = (downGap > 0 ? 'Your most important move is closing the ' + fmt(downGap) + ' down payment gap' : 'Your most important move is bringing your monthly debts down') + '. The reason this is the priority is that it directly changes your DTI — the number lenders care about most. Even a modest improvement shifts you from "almost" to "approved."';
+   p3 = 'What most first-time buyers in ' + state + ' don\'t know is that down payment assistance programs can cover part — sometimes all — of the down payment, and many are grants that never need to be repaid. They exist specifically for buyers in your situation. Most people miss them because their lender doesn\'t bring them up.';
+   p4 = 'This week, search "' + state + ' first time home buyer down payment assistance" and look at .gov and .org results. Identify 2–3 programs and check your eligibility. This one hour of research could change your timeline by months.';
+  } else {
+   p1 = 'Right now the numbers need some work before a lender will say yes — but the gap is specific and measurable, which means it\'s fixable. ' + (creditGap > 0 ? 'Your credit score needs to reach 580 to unlock FHA — you\'re ' + creditGap + ' points away.' : 'Your credit is in a workable range.') + ' The path forward is clear, even if it takes some time.';
+   p2 = 'The single most important thing to focus on is your credit score, because it\'s the fastest lever available and it opens everything else. Paying credit card balances below 30% of your limit can add 20–50 points within 60 days. Don\'t open new accounts right now — it temporarily drops your score when you need it moving up.';
+   p3 = 'Here\'s what most people in your situation don\'t know: HUD-approved housing counselors offer free sessions specifically for buyers who aren\'t ready yet. They look at your actual credit report, identify exactly what\'s dragging your score, and give you a personalized sequence. It\'s professional financial coaching at zero cost.';
+   p4 = 'This week, go to annualcreditreport.com and pull your free credit report. For each credit card, calculate 30% of the limit — that\'s your target balance. If any card is above that, put your next extra payment there. You can start today, and it begins moving your number immediately.';
+  }
+  reportText = [p1, p2, p3, p4].join('\n\n');
  }
 
- document.getElementById('reportText').textContent = [p1, p2, p3, p4].join('\n\n');
+ document.getElementById('reportLoading').classList.add('hidden');
+ document.getElementById('reportText').textContent = reportText;
  document.getElementById('reportActions').style.display = 'flex';
 }
 
